@@ -10,6 +10,7 @@ from tools.utils.market_tool_helper import (
     _quarterly_pct_change,
     _high_low_vs_avg,
 )
+from core.yf_context import YFinance401Error, yf_call
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -23,54 +24,39 @@ TICKERS: dict[str, str] = {
 }
 
 
-def process_market_data(_):
+def process_market_data(x, prefetched_indices: dict | None = None):
 
     processed = {}
-
+    errors = []
     success_count = 0
 
-    errors = []
+    if prefetched_indices:
 
-    def fetch_single(name, ticker):
+        for name, fetch_result in prefetched_indices.items():
 
-        result = fetch_df(ticker)
+            if fetch_result.get("status") != "success":
+                processed[name] = {
+                    "status": "failed",
+                    "error": fetch_result.get("error"),
+                    "data": None,
+                }
+                errors.append(f"{name}: {fetch_result.get('error')}")
+                continue
 
-        return name, result
+            processed[name] = {
+                "status": "success",
+                "error": None,
+                "data": extract_metrics(
+                    name, fetch_result["status"], fetch_result["data"]
+                ),
+            }
 
-    with ThreadPoolExecutor(max_workers=len(TICKERS)) as executor:
-
-        futures = [
-            executor.submit(fetch_single, name, ticker)
-            for name, ticker in TICKERS.items()
-        ]
-
-        for future in as_completed(futures):
-
-            try:
-
-                name, result = future.result()
-
-                if result["status"] != "success":
-
-                    errors.append(f"{name}: {result.get('error')}")
-
-                    continue
-
-                processed[name] = extract_metrics(
-                    name, result["status"], result["data"]
-                )
-
-                success_count += 1
-
-            except Exception as e:
-
-                errors.append(str(e))
+            success_count += 1
 
     if success_count == 0:
+        return {"status": "failed", "error": "\n".join(errors), "data": {}}
 
-        return {"status": "failed", "error": "\n".join(errors)}
-
-    return {"status": "success", **processed}
+    return {"status": "success", "error": None, "data": processed}
 
 
 @with_retry(retries=3, delay=2.0, backoff=2.0)
@@ -89,9 +75,18 @@ def fetch_df(ticker: str, period: str = "1y", interval: str = "1d") -> pd.DataFr
     }
 
     try:
-        df = yf.download(
-            ticker, period=period, interval=interval, auto_adjust=True, progress=False
-        )
+        with yf_call("fetch_df"):
+            df = yf.download(
+                ticker,
+                period=period,
+                interval=interval,
+                auto_adjust=True,
+                progress=False,
+            )
+    except YFinance401Error as e:
+        logger.error(f"401 on '{e.caller}' — Yahoo Finance rejected the request")
+        result["error"] = f"401 Unauthorized from Yahoo Finance in '{e.caller}'"
+        return result
     except Exception as exc:
         logger.exception(f"yfinance.download failed | ticker={ticker} | {exc}")
         result["error"] = f"download_failed: {exc}"
@@ -126,7 +121,7 @@ def fetch_df(ticker: str, period: str = "1y", interval: str = "1d") -> pd.DataFr
 
 def extract_metrics(
     ticker: str, status: str, df: pd.DataFrame | None
-) -> tuple[str, dict[str, Any]]:
+) -> dict[str, Any]:
     """
     Extract full metric set for a single market index.
     Fully agent-safe: no external guards required.
@@ -148,17 +143,17 @@ def extract_metrics(
     if status != "success":
         metrics["status"] = "skipped"
         metrics["error"] = f"fetch_status={status}"
-        return ticker, metrics
+        return metrics
 
     if df is None or df.empty:
         metrics["status"] = "failed"
         metrics["error"] = "empty_or_missing_dataframe"
-        return ticker, metrics
+        return metrics
 
     if "Close" not in df.columns:
         metrics["status"] = "failed"
         metrics["error"] = "missing_close_column"
-        return ticker, metrics
+        return metrics
 
     try:
         try:
@@ -186,13 +181,13 @@ def extract_metrics(
         )
 
         logger.info(f"Computed metrics successfully | ticker={ticker}")
-        return ticker, metrics
+        return metrics
 
     except Exception as exc:
         logger.exception(f"Unexpected metrics failure | ticker={ticker} | {exc}")
         metrics["status"] = "failed"
         metrics["error"] = str(exc)
-        return ticker, metrics
+        return metrics
 
 
 if __name__ == "__main__":

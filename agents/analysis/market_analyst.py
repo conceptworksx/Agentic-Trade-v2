@@ -9,7 +9,15 @@ from langchain_core.output_parsers import StrOutputParser
 
 from agents.base_agent import BaseAgent
 
-from tools.market_tools import process_market_data
+
+def _extract_market_section(data: dict, key: str):
+
+    section = data.get("market_data", {}).get("data", {}).get(key, {})
+
+    if section.get("status") == "success":
+        return json.dumps(section.get("data", {}), indent=2)
+
+    return "Data not available"
 
 
 def _build_messages(data: dict) -> dict:
@@ -18,19 +26,19 @@ def _build_messages(data: dict) -> dict:
 Analyze the Indian and Global market metrics:
 
 S&P 500 Index:
-{json.dumps(data.get('GSPC', {}), indent=2)}
+{_extract_market_section(data, 'GSPC')}
 
 NASDAQ Composite Index:
-{json.dumps(data.get('IXIC', {}), indent=2)}
+{_extract_market_section(data, 'IXIC')}
 
-Volatility Index:
-{json.dumps(data.get('VIX', {}), indent=2)}
+Volatility Index (VIX):
+{_extract_market_section(data, 'VIX')}
 
 NIFTY 50 Index:
-{json.dumps(data.get('NSEI', {}), indent=2)}
+{_extract_market_section(data, 'NSEI')}
 
 SENSEX:
-{json.dumps(data.get('BSESN', {}), indent=2)}
+{_extract_market_section(data, 'BSESN')}
 """
 
     return {"messages": [HumanMessage(content=content.strip())]}
@@ -49,19 +57,27 @@ class MarketAnalyst(BaseAgent):
         )
 
         error_chain = RunnableLambda(
-            lambda x: f"Failed to fetch market data:\n{x['error']}"
+            lambda x: (
+                "Failed to fetch market data:\n"
+                f"{x.get('market_data', {}).get('error', 'unknown error')}"
+            )
         )
 
         branch = RunnableBranch(
             (
-                lambda x: x["status"] == "success",
+                lambda x: x.get("market_data", {}).get("status") == "success",
                 success_chain,
             ),
             error_chain,
         )
 
-        self.chain = RunnableLambda(process_market_data) | branch
+        self.chain = branch
 
-    def run(self) -> str:
+    def run(self, state) -> str:
 
-        return self.chain.invoke({})
+        return self.chain.invoke(
+            {
+                "ticker": state["ticker_of_company"],
+                "market_data": state.get("data_bundle", {}).get("market_data"),
+            }
+        )

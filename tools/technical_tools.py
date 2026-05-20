@@ -9,6 +9,7 @@ from tools.utils.technical_tool_helper import (
     _compute_rsi_condition,
     _compute_trend_alignment,
 )
+from core.yf_context import YFinance401Error, yf_call
 from tools.utils.retry_utils import with_retry
 from core.logging import get_logger
 
@@ -19,20 +20,17 @@ warnings.filterwarnings("ignore")
 
 def process_technical_data(x):
 
-    ticker = x["ticker"]
+    ticker = x.get("ticker")
+    prefetched_ohlcv = x.get("ohlcv")
 
-    fetch_result = fetch_df(ticker)
-
-    if fetch_result["status"] != "success":
-
+    if prefetched_ohlcv is not None and not prefetched_ohlcv.empty:
+        df = prefetched_ohlcv
+    else:
         return {
             "ticker": ticker,
             "status": "failed",
-            "error": fetch_result["error"],
+            "error": "No valid OHLCV data available",
         }
-
-    df = fetch_result["data"]
-
     return {
         "ticker": ticker,
         "status": "success",
@@ -61,15 +59,18 @@ def fetch_df(ticker: str, period: str = "1y", interval: str = "1d") -> dict[str,
         "ticker": ticker,
         "source": "yfinance",
     }
-
     try:
-        df = yf.download(
-            ticker,
-            period=period,
-            interval=interval,
-            auto_adjust=True,
-            progress=False,
-        )
+        with yf_call("fetch_df"):
+            df = yf.download(
+                ticker,
+                period=period,
+                interval=interval,
+                auto_adjust=True,
+                progress=False,
+            )
+    except YFinance401Error as e:
+        result["error"] = f"401_unauthorized | caller='{e.caller}'"
+        return result
     except Exception as exc:
         logger.exception(f"yfinance.download failed | ticker={ticker} | {exc}")
         result["error"] = f"download_failed: {exc}"

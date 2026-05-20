@@ -2,14 +2,16 @@ from typing import Any
 import yfinance as yf
 from core.constants import SectorName
 from core.logging import get_logger
+from core.yf_context import YFinance401Error, yf_call
 from tools.utils.retry_utils import with_retry
 from tools.utils.sector_tool_helper import _fetch_sector_data, _parse_json_object
 
 logger = get_logger(__name__)
 
 
-@with_retry(retries=3, delay=2.0, backoff=2.0)
-def get_company_sector(ticker: str) -> dict[str, Any]:
+def get_company_sector(
+    ticker: str, prefetched_info: dict | None = None
+) -> dict[str, Any]:
     """
     Fetch raw company metadata (sector, industry, summary) from yfinance.
 
@@ -29,10 +31,13 @@ def get_company_sector(ticker: str) -> dict[str, Any]:
     }
 
     try:
-        stock = yf.Ticker(ticker)
-        info = stock.info
+        # stock = yf.Ticker(ticker)
+        # with yf_call("get_company_sector"):
+        #     info = stock.info
 
         # yfinance may return None or a dict containing error info
+        if prefetched_info:
+            info = prefetched_info
         if (
             isinstance(info, dict)
             and info
@@ -40,20 +45,25 @@ def get_company_sector(ticker: str) -> dict[str, Any]:
             and info.get("industry") not in [None, "", "N/A"]
         ):
 
-            result.update({
-                "status": "success",
-                "company": info.get("longName", "N/A"),
-                "sector": info.get("sector", "N/A"),
-                "industry": info.get("industry", "N/A"),
-                "business": info.get("longBusinessSummary", "N/A"),
-            })
-
+            result.update(
+                {
+                    "status": "success",
+                    "company": info.get("longName", "N/A"),
+                    "sector": info.get("sector", "N/A"),
+                    "industry": info.get("industry", "N/A"),
+                    "business": info.get("longBusinessSummary", "N/A"),
+                }
+            )
 
         else:
             logger.warning(
                 f"Incomplete or missing metadata from yfinance | ticker={ticker}"
             )
             result["error"] = "Ticker metadata is incomplete or not found."
+
+    except YFinance401Error as e:
+        result["error"] = f"401 Unauthorized in '{e.caller}'"
+        return result
 
     except Exception as exc:
         logger.error(f"yfinance error | ticker={ticker} | {exc}")

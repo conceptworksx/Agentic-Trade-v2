@@ -1,3 +1,4 @@
+import json
 from langchain_core.messages import HumanMessage
 from langchain_core.runnables import (
     RunnableLambda,
@@ -7,34 +8,42 @@ from langchain_core.output_parsers import StrOutputParser
 
 from agents.base_agent import BaseAgent
 
-from tools.fundamental_tools import process_fundamental_data
-
 
 def _build_messages(data: dict) -> dict:
 
+    fund = data.get("fundamental_data", {})
+
+    income = fund.get("income_stmt", {}).get("income_statement", {})
+    balance = fund.get("balance_sheet", {}).get("balance_sheet", {})
+    cash = fund.get("cash_flow", {}).get("cash_flow", {})
+    fundamentals = fund.get("fundamentals", {}).get("fundamentals", {})
+    eps_trend = fund.get("eps_trend", {}).get("eps_trend", {})
+    valuation = fund.get("valuation", {}).get("valuation", {})
+    growth = fund.get("growth", {}).get("growth", {})
+
     content = f"""
-Analyze the financial fundamentals of the company {data['ticker']}:
+Analyze the financial fundamentals of the company {data.get('ticker')}:
 
 INCOME STATEMENT:
-{data['income_stmt']}
+{json.dumps(income, indent=2)}
 
 BALANCE SHEET:
-{data['balance_sheet']}
+{json.dumps(balance, indent=2)}
 
 CASH FLOW:
-{data['cash_flow']}
+{json.dumps(cash, indent=2)}
 
 FUNDAMENTALS:
-{data['fundamentals']}
+{json.dumps(fundamentals, indent=2)}
 
 EPS TREND:
-{data['eps_trend']}
+{json.dumps(eps_trend, indent=2)}
 
 VALUATION:
-{data['valuation']}
+{json.dumps(valuation, indent=2)}
 
 GROWTH:
-{data['growth']}
+{json.dumps(growth, indent=2)}
 """
 
     return {"messages": [HumanMessage(content=content)]}
@@ -59,14 +68,21 @@ class FundamentalAnalyst(BaseAgent):
 
         branch = RunnableBranch(
             (
-                lambda x: x["status"] == "success",
+                lambda x: (x.get("fundamental_data") or {}).get("status") == "success",
                 success_chain,
             ),
             error_chain,
         )
 
-        self.chain = RunnableLambda(process_fundamental_data) | branch
+        self.chain = branch
 
     def run(self, state):
 
-        return self.chain.invoke({"ticker": state["ticker_of_company"]})
+        return self.chain.invoke(
+            {
+                "ticker": state["ticker_of_company"],
+                "fundamental_data": state.get("data_bundle", {}).get(
+                    "fundamental_data"
+                ),
+            }
+        )

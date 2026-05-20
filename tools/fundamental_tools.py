@@ -15,6 +15,7 @@ from tools.utils.fundamental_tool_helper import (
     _safe_get,
     _margin,
 )
+from core.yf_context import YFinance401Error, yf_call
 from tools.utils.retry_utils import with_retry
 from core.logging import get_logger
 
@@ -25,216 +26,40 @@ warnings.filterwarnings("ignore")
 
 def process_fundamental_data(x):
 
-    ticker = x["ticker"]
+    ticker = x.get("ticker")
 
-    fetch_result = ticker_data(ticker)
-    if fetch_result["status"] != "success":
+    fetch_result = x
+
+    if fetch_result.get("status") != "success":
 
         return {
             "ticker": ticker,
             "status": "failed",
-            "error": fetch_result["error"],
+            "error": fetch_result.get("error"),
         }
 
     return {
         "ticker": ticker,
         "status": "success",
-        "income_stmt": fetch_income_stmt(fetch_result["financials"]),
+        "income_stmt": fetch_income_stmt(fetch_result.get("financials")),
         "balance_sheet": fetch_balance_sheet(
-            fetch_result["balance_sheet"],
-            fetch_result["info"],
+            fetch_result.get("balance_sheet"),
+            fetch_result.get("info"),
         ),
-        "cash_flow": fetch_cash_flow(fetch_result["cash_flow"]),
+        "cash_flow": fetch_cash_flow(fetch_result.get("cash_flow")),
         "fundamentals": fetch_fundamentals(
-            fetch_result["financials"],
-            fetch_result["balance_sheet"],
+            fetch_result.get("financials"),
+            fetch_result.get("balance_sheet"),
         ),
-        "eps_trend": fetch_eps_trend(fetch_result["financials"]),
+        "eps_trend": fetch_eps_trend(fetch_result.get("financials")),
         "valuation": fetch_valuation(
-            fetch_result["info"],
-            fetch_result["major_holders"],
+            fetch_result.get("info"),
+            fetch_result.get("major_holders"),
         ),
-        "growth": fetch_growth(fetch_result["financials"]),
+        "growth": fetch_growth(fetch_result.get("financials")),
     }
 
 
-# def ticker_data(ticker: str) -> Dict[str, Any]:
-
-#     logger.info(f"Fetching all financial data for {ticker}")
-
-#     result = {
-#         "status": "success",
-#         "ticker": ticker,
-#         "financials": None,
-#         "balance_sheet": None,
-#         "cash_flow": None,
-#         "info": {},
-#         "major_holders": None,
-#         "error": None,
-#     }
-
-#     try:
-
-#         t = yf.Ticker(ticker)
-
-#         # ---------------------------------
-#         # Wrapper for logging + exception handling
-#         # ---------------------------------
-
-#         def safe_fetch(name: str, fn):
-
-#             logger.info(f"[{ticker}] START -> {name}")
-
-#             try:
-
-#                 value = fn()
-
-#                 logger.info(f"[{ticker}] SUCCESS -> {name}")
-
-#                 return value
-
-#             except Exception as e:
-
-#                 logger.exception(
-#                     f"[{ticker}] FAILED -> {name} | " f"{type(e).__name__}: {e}"
-#                 )
-
-#                 return None
-
-#         # ---------------------------------
-#         # Actual fetch functions
-#         # ---------------------------------
-
-#         def fetch_financials():
-#             return t.financials
-
-#         def fetch_balance_sheet():
-#             return t.balance_sheet
-
-#         def fetch_cash_flow():
-#             return t.cash_flow
-
-#         def fetch_info():
-
-#             i = t.info
-
-#             if not isinstance(i, dict):
-#                 return {}
-
-#             cleaned = {
-#                 k: v
-#                 for k, v in i.items()
-#                 if v
-#                 not in (
-#                     None,
-#                     "None",
-#                     "null",
-#                     "Null",
-#                     "",
-#                     [],
-#                     {},
-#                 )
-#             }
-
-#             return cleaned
-
-#         def fetch_major_holders():
-#             return t.major_holders
-
-#         # ---------------------------------
-#         # Parallel execution
-#         # ---------------------------------
-
-#         jobs = {
-#             "financials": fetch_financials,
-#             "balance_sheet": fetch_balance_sheet,
-#             "cash_flow": fetch_cash_flow,
-#             "info": fetch_info,
-#             "major_holders": fetch_major_holders,
-#         }
-
-#         with ThreadPoolExecutor(max_workers=5) as executor:
-
-#             future_map = {
-#                 executor.submit(safe_fetch, name, fn): name for name, fn in jobs.items()
-#             }
-
-#             for future in as_completed(future_map):
-
-#                 key = future_map[future]
-
-#                 try:
-
-#                     result[key] = future.result()
-
-#                 except Exception as e:
-
-#                     # This catches executor-level failures
-#                     logger.exception(
-#                         f"[{ticker}] THREAD FAILURE -> {key} | "
-#                         f"{type(e).__name__}: {e}"
-#                     )
-
-#                     result[key] = None
-
-#         # ---------------------------------
-#         # Debug print
-#         # ---------------------------------
-
-#         print(result["info"])
-
-#         # ---------------------------------
-#         # Empty checks
-#         # ---------------------------------
-
-#         financials_empty = result["financials"] is None or result["financials"].empty
-
-#         balance_sheet_empty = (
-#             result["balance_sheet"] is None or result["balance_sheet"].empty
-#         )
-
-#         cash_flow_empty = result["cash_flow"] is None or result["cash_flow"].empty
-
-#         info_empty = not result["info"]
-
-#         holders_empty = result["major_holders"] is None or result["major_holders"].empty
-
-#         # ---------------------------------
-#         # Final validation
-#         # ---------------------------------
-
-#         if all(
-#             [
-#                 financials_empty,
-#                 balance_sheet_empty,
-#                 cash_flow_empty,
-#                 info_empty,
-#                 holders_empty,
-#             ]
-#         ):
-
-#             result["status"] = "failed"
-
-#             result["error"] = (
-#                 f"No financial data available for ticker '{ticker}'. "
-#                 f"Ticker may be invalid, delisted, or unsupported."
-#             )
-
-#             logger.error(f"[{ticker}] ALL endpoints returned empty data")
-
-#         return result
-
-#     except Exception as exc:
-
-#         logger.exception(f"[{ticker}] Fatal failure in ticker_data")
-
-#         result["status"] = "failed"
-#         result["error"] = str(exc)
-
-#         return result
-
-
-# old one with paralllel
 def ticker_data(ticker: str) -> Dict[str, Any]:
 
     logger.info(f"Fetching all financial data for {ticker}")
@@ -255,17 +80,20 @@ def ticker_data(ticker: str) -> Dict[str, Any]:
         t = yf.Ticker(ticker)
 
         def get_financials():
-            return t.financials
+            with yf_call("financials"):
+                return t.financials
 
         def get_balance_sheet():
-            return t.balance_sheet
+            with yf_call("balance_sheet"):
+                return t.balance_sheet
 
         def get_cash_flow():
-            return t.cash_flow
+            with yf_call("cash_flow"):
+                return t.cash_flow
 
         def get_info():
-
-            i = t.info
+            with yf_call("info_fundamental"):
+                i = t.info
             if not isinstance(i, dict):
                 return {}
 
@@ -286,7 +114,8 @@ def ticker_data(ticker: str) -> Dict[str, Any]:
             return cleaned
 
         def get_holders():
-            return t.major_holders
+            with yf_call("major_holders"):
+                return t.major_holders
 
         with ThreadPoolExecutor(max_workers=5) as executor:
 
@@ -303,6 +132,15 @@ def ticker_data(ticker: str) -> Dict[str, Any]:
                 try:
                     result[key] = future.result()
 
+                except YFinance401Error as e:
+                    logger.error(
+                        f"401 on '{e.caller}' — Yahoo Finance rejected the request"
+                    )
+                    result["status"] = "failed"
+                    result["error"] = (
+                        f"401 Unauthorized from Yahoo Finance in '{e.caller}'"
+                    )
+                    # return result  # fast-fail: all calls will 401 too
                 except Exception as e:
                     logger.warning(f"{key} fetch failed: {e}")
 

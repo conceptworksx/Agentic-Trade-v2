@@ -10,7 +10,6 @@ from core.constants import get_sector_catalog
 from core.logging import get_logger
 from tools.sector_tools import (
     fetch_sector_payload,
-    get_company_sector,
     parse_sector_resolver_output,
 )
 
@@ -102,10 +101,8 @@ class SectorAnalyst(BaseAgent):
         # Loads rough sector info from yfinance and the supported catalog constants
         sector_fetcher = RunnableParallel(
             {
-                "ticker": RunnableLambda(lambda x: x["ticker"]),
-                "company_sector": RunnableLambda(
-                    lambda x: get_company_sector(x["ticker"])
-                ),
+                "ticker": RunnableLambda(lambda x: x.get("ticker")),
+                "company_sector": RunnableLambda(lambda x: x.get("sector_data", {})),
                 "sector_catalog": RunnableLambda(lambda _: get_sector_catalog()),
             }
         )
@@ -141,5 +138,6 @@ class SectorAnalyst(BaseAgent):
         return self.chain.invoke(
             {
                 "ticker": state["ticker_of_company"],
+                "sector_data": state.get("data_bundle", {}).get("sector_data"),
             }
         )

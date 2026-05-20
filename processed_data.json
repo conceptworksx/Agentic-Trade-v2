@@ -1,0 +1,439 @@
+{
+    "technical_data": {
+        "ticker": "RELIANCE.NS",
+        "status": "success",
+        "price_levels": {
+            "current": 1359.7,
+            "high_52w": 1592.3,
+            "low_52w": 1304.6,
+            "pct_from_52w_high": -14.61,
+            "pct_from_52w_low": 4.22,
+            "rs_20d_pct": 1.21,
+            "status": "success",
+            "error": null
+        },
+        "moving_averages": {
+            "ma10": 1369.89,
+            "ma50": 1378.1,
+            "ma100": 1415.43,
+            "ma200": 1430.37,
+            "price_vs_ma10": "BELOW",
+            "price_vs_ma50": "BELOW",
+            "price_vs_ma100": "BELOW",
+            "price_vs_ma200": "BELOW",
+            "golden_cross": false,
+            "death_cross": true,
+            "trend_alignment": "STRONG_BEAR",
+            "status": "success",
+            "error": null
+        },
+        "rsi": {
+            "value": 46.15,
+            "condition": "NEUTRAL",
+            "trending_up": true,
+            "bull_divergence": false,
+            "bear_divergence": false,
+            "status": "success",
+            "error": null
+        },
+        "macd": {
+            "macd": -9.4047,
+            "signal": -0.3181,
+            "histogram": -9.0866,
+            "above_signal": false,
+            "bullish_cross": false,
+            "bearish_cross": false,
+            "histogram_expanding": false,
+            "bias": "BEARISH",
+            "status": "success",
+            "error": null
+        },
+        "bollinger": {
+            "upper": 1480.59,
+            "mid": 1388.82,
+            "lower": 1297.05,
+            "bandwidth_pct": 13.22,
+            "percent_b": 0.341,
+            "bandwidth_trend": "EXPANDING",
+            "squeeze_active": false,
+            "breakout_up": false,
+            "breakout_down": false,
+            "upside_to_upper_pct": 8.89,
+            "downside_to_lower_pct": 4.61,
+            "status": "success",
+            "error": null
+        },
+        "atr": {
+            "value": 31.56,
+            "atr_pct": 2.32,
+            "volatility": "HIGH",
+            "daily_move_range": {
+                "low": 1328.14,
+                "high": 1391.26
+            },
+            "status": "success",
+            "error": null
+        },
+        "vwma": {
+            "value": 1391.23,
+            "price_vs_vwma": "BELOW",
+            "signal": "BEARISH",
+            "status": "success",
+            "error": null
+        },
+        "mfi": {
+            "value": 34.76,
+            "condition": "NEUTRAL",
+            "signal": "HOLD",
+            "status": "success",
+            "error": null
+        },
+        "volume": {
+            "latest": 13247462,
+            "avg_20d": 19212175.0,
+            "ratio_5d_20d": 0.89,
+            "surge": false,
+            "status": "success",
+            "error": null
+        }
+    },
+    "fundamental_data": {
+        "ticker": "RELIANCE.NS",
+        "status": "success",
+        "income_stmt": {
+            "status": "success",
+            "income_statement": {
+                "revenue": {
+                    "2026-03-31": 10572190000000.0,
+                    "2025-03-31": 9646930000000.0,
+                    "2024-03-31": 9010640000000.0,
+                    "2023-03-31": 8778350000000.0,
+                    "2022-03-31": null
+                },
+                "ebitda": {
+                    "2026-03-31": 2079110000000.0,
+                    "2025-03-31": 1834220000000.0,
+                    "2024-03-31": 1769440000000.0,
+                    "2023-03-31": 1533070000000.0,
+                    "2022-03-31": null
+                },
+                "net_income": {
+                    "2026-03-31": 807750000000.0,
+                    "2025-03-31": 696480000000.0,
+                    "2024-03-31": 696210000000.0,
+                    "2023-03-31": 667020000000.0,
+                    "2022-03-31": null
+                },
+                "eps_diluted": {
+                    "2026-03-31": null,
+                    "2025-03-31": 51.47,
+                    "2024-03-31": 51.45,
+                    "2023-03-31": 49.3,
+                    "2022-03-31": 45.43
+                }
+            },
+            "error": null
+        },
+        "balance_sheet": {
+            "status": "success",
+            "balance_sheet": {
+                "cash": {
+                    "2026-03-31": 1459770000000.0,
+                    "2025-03-31": 1006450000000.0,
+                    "2024-03-31": 935400000000.0,
+                    "2023-03-31": 341560000000.0,
+                    "2022-03-31": null
+                },
+                "total_liabilities": {
+                    "2026-03-31": 10922740000000.0,
+                    "2025-03-31": 9404930000000.0,
+                    "2024-03-31": 8301980000000.0,
+                    "2023-03-31": 7785500000000.0,
+                    "2022-03-31": null
+                },
+                "total_debt": {
+                    "2026-03-31": 3980000000000.0,
+                    "2025-03-31": 3695750000000.0,
+                    "2024-03-31": 3461420000000.0,
+                    "2023-03-31": 3343920000000.0,
+                    "2022-03-31": null
+                },
+                "shareholders_equity": {
+                    "2026-03-31": 9040300000000.0,
+                    "2025-03-31": 8432000000000.0,
+                    "2024-03-31": 7934810000000.0,
+                    "2023-03-31": 7158720000000.0,
+                    "2022-03-31": null
+                }
+            },
+            "error": null
+        },
+        "cash_flow": {
+            "status": "success",
+            "cash_flow": {
+                "operating_cash_flow": {
+                    "2026-03-31": 1921130000000.0,
+                    "2025-03-31": 1787030000000.0,
+                    "2024-03-31": 1587880000000.0,
+                    "2023-03-31": 1150320000000.0,
+                    "2022-03-31": null
+                },
+                "free_cash_flow": {
+                    "2026-03-31": 691970000000.0,
+                    "2025-03-31": 387360000000.0,
+                    "2024-03-31": 59050000000.0,
+                    "2023-03-31": -259560000000.0,
+                    "2022-03-31": null
+                }
+            },
+            "error": null
+        },
+        "fundamentals": {
+            "status": "success",
+            "fundamentals": {
+                "net_margin_pct": {
+                    "2026-03-31": 7.64,
+                    "2025-03-31": 7.22,
+                    "2024-03-31": 7.73,
+                    "2023-03-31": 7.6,
+                    "2022-03-31": null
+                },
+                "roe_pct": {
+                    "2026-03-31": 8.93,
+                    "2025-03-31": 8.26,
+                    "2024-03-31": 8.77,
+                    "2023-03-31": 9.32,
+                    "2022-03-31": null
+                },
+                "roce_pct": {
+                    "2026-03-31": 7.41,
+                    "2025-03-31": 7.51,
+                    "2024-03-31": 8.22,
+                    "2023-03-31": 8.42,
+                    "2022-03-31": null
+                },
+                "debt_to_equity": {
+                    "2022-03-31": null,
+                    "2026-03-31": 0.4403,
+                    "2025-03-31": 0.4383,
+                    "2024-03-31": 0.4362,
+                    "2023-03-31": 0.4671
+                },
+                "interest_coverage": {
+                    "2026-03-31": 4.48,
+                    "2025-03-31": 4.63,
+                    "2024-03-31": 5.13,
+                    "2023-03-31": 5.38,
+                    "2022-03-31": null
+                }
+            },
+            "error": null
+        },
+        "eps_trend": {
+            "status": "success",
+            "eps_trend": {
+                "eps_diluted": {
+                    "2026-03-31": null,
+                    "2025-03-31": 51.47,
+                    "2024-03-31": 51.45,
+                    "2023-03-31": 49.3,
+                    "2022-03-31": 45.43
+                },
+                "eps_cagr_pct": 4.25
+            },
+            "error": null
+        },
+        "valuation": {
+            "status": "success",
+            "valuation": {
+                "market_cap": 18400101269504,
+                "valuation_ratios": {
+                    "pe_ratio": 22.79,
+                    "ev_ebitda": 11.88,
+                    "peg_ratio": 0.82
+                },
+                "dividend_yield_pct": 42.0,
+                "promoter_holding_pct": 51.18
+            },
+            "error": null
+        },
+        "growth": {
+            "status": "success",
+            "growth": {
+                "revenue_yoy_pct": {
+                    "2026-03-31": 9.59,
+                    "2025-03-31": 7.06,
+                    "2024-03-31": 2.65,
+                    "2023-03-31": null
+                },
+                "revenue_cagr_pct": 6.39,
+                "net_income_cagr_pct": 6.59
+            },
+            "error": null
+        }
+    },
+    "market_data": {
+        "status": "success",
+        "error": null,
+        "data": {
+            "GSPC": {
+                "status": "success",
+                "error": null,
+                "data": {
+                    "10d_pct_change": 1.3003,
+                    "monthly_10d_pct_change": [
+                        4.1458,
+                        1.6997,
+                        -0.1563
+                    ],
+                    "quarterly_pct_change": [
+                        8.5631,
+                        5.0866,
+                        1.5156,
+                        7.4583
+                    ],
+                    "high_to_avg_change_pct": 12.9428,
+                    "low_to_avg_change_pct": 13.3461,
+                    "status": "success",
+                    "error": null
+                }
+            },
+            "VIX": {
+                "status": "success",
+                "error": null,
+                "data": {
+                    "10d_pct_change": 3.3928,
+                    "monthly_10d_pct_change": [
+                        -2.9246,
+                        -9.943,
+                        5.2693
+                    ],
+                    "quarterly_pct_change": [
+                        -13.9304,
+                        42.6386,
+                        -18.064,
+                        -5.8146
+                    ],
+                    "high_to_avg_change_pct": 93.6723,
+                    "low_to_avg_change_pct": 26.5911,
+                    "status": "success",
+                    "error": null
+                }
+            },
+            "NSEI": {
+                "status": "success",
+                "error": null,
+                "data": {
+                    "10d_pct_change": -2.7617,
+                    "monthly_10d_pct_change": [
+                        6.2834,
+                        -0.1934,
+                        -2.7445
+                    ],
+                    "quarterly_pct_change": [
+                        -0.2615,
+                        5.1916,
+                        -2.0849,
+                        -7.8798
+                    ],
+                    "high_to_avg_change_pct": 5.3975,
+                    "low_to_avg_change_pct": 11.3499,
+                    "status": "success",
+                    "error": null
+                }
+            },
+            "BSESN": {
+                "status": "success",
+                "error": null,
+                "data": {
+                    "10d_pct_change": -3.3866,
+                    "monthly_10d_pct_change": [
+                        6.2409,
+                        -0.7106,
+                        -3.2451
+                    ],
+                    "quarterly_pct_change": [
+                        -0.7964,
+                        4.9197,
+                        -2.7359,
+                        -9.557
+                    ],
+                    "high_to_avg_change_pct": 5.7314,
+                    "low_to_avg_change_pct": 12.2015,
+                    "status": "success",
+                    "error": null
+                }
+            },
+            "IXIC": {
+                "status": "success",
+                "error": null,
+                "data": {
+                    "10d_pct_change": 2.1503,
+                    "monthly_10d_pct_change": [
+                        7.179,
+                        2.7114,
+                        0.123
+                    ],
+                    "quarterly_pct_change": [
+                        12.9922,
+                        7.2973,
+                        -1.5455,
+                        14.5818
+                    ],
+                    "high_to_avg_change_pct": 19.1672,
+                    "low_to_avg_change_pct": 17.0083,
+                    "status": "success",
+                    "error": null
+                }
+            }
+        }
+    },
+    "news_data": {
+        "company_news": {
+            "status": "success",
+            "ai_summary": "",
+            "articles": [
+                {
+                    "title": "How The Story On Reliance Industries (NSEI:RELIANCE) Is Shifting Around A \u20b91,696 Fair Value",
+                    "summary": "Reliance Industries\u2019 fair value target is set at \u20b91,696.63, with the latest update keeping this figure unchanged rather than signaling a fresh move in the headline number. Analysts are concentrating on why this precise target is being reaffirmed and what the updated model inputs suggest about how the story around Reliance Industries is being framed. As you read on, you will see how to interpret these shifts in narrative and track what might matter most for your own view. Stay updated as the...",
+                    "published_at": "2026-05-20T09:12:49Z",
+                    "source": "Simply Wall St."
+                },
+                {
+                    "title": "How The Evolving Story For Reliance Industries (NSEI:RELIANCE) Is Shaping Its Valuation Reset",
+                    "summary": "Reliance Industries has seen its fair value estimate revised to \u20b91,696.63 from \u20b91,732.03, a small shift that still matters if you are tracking valuation signals closely. This change sits within a broader pattern highlighted in recent research on large caps, where some analysts are pushing targets higher while others are trimming them, depending on how they view growth visibility and execution risk. As you read on, you will see how to interpret these moves and keep up with the evolving...",
+                    "published_at": "2026-05-05T20:09:49Z",
+                    "source": "Simply Wall St."
+                },
+                {
+                    "title": "India's Reliance hands over documents in bribery probe, executive gets bail",
+                    "summary": "By Abhijith Ganapavaram NEW DELHI, May 5 (Reuters) - India's biggest listed company, Reliance Industries, has handed over documents demanded by federal police investigating a drone import bribery case",
+                    "published_at": "2026-05-05T07:00:41Z",
+                    "source": "Reuters"
+                },
+                {
+                    "title": "India's Reliance cuts exports of alkylates, boosts LPG output",
+                    "summary": "By Nidhi Verma and Mohi Narayan NEW DELHI, May 4 (Reuters) - India's Reliance Industries is cutting output of alkylates and diverting feedstock to ramp up production of liquefied petroleum gas (LPG)",
+                    "published_at": "2026-05-04T14:54:26Z",
+                    "source": "Reuters"
+                },
+                {
+                    "title": "Reliance and Meta's joint venture signals India's shift from AI ambition to enterprise deployment",
+                    "summary": "The decision by Reliance Industries and Meta Platforms Inc (NASDAQ:META, XETRA:FB2A, SIX:FB)to appoint a founding chief executive at their joint venture, Reliance Enterprise Intelligence Limited, sets the tone for the whole collaboration. And the choice of candidate suggests the two companies...",
+                    "published_at": "2026-04-28T10:51:00Z",
+                    "source": "Proactive"
+                }
+            ],
+            "error": null
+        }
+    },
+    "sector_data": {
+        "status": "success",
+        "ticker": "RELIANCE.NS",
+        "company": "Reliance Industries Limited",
+        "sector": "Energy",
+        "industry": "Oil & Gas Refining & Marketing",
+        "business": "Reliance Industries Limited engages in the hydrocarbon exploration and production, oil and chemicals, retail, and digital service businesses worldwide. It operates through Oil to Chemicals, Oil and Gas, Retail, Digital Services, and Others segments. The company offers refining and marketing products, including liquefied petroleum gas, propylene, naphtha, gasoline, jet/aviation turbine fuel, kerosine oil, diesel, sulphur, and petroleum coke. It also provides polymers, including high-density and low-density polyethylene (PE), linear low-density PE, homopolymer, random and impact copolymer, and polyvinyl chloride; fibre intermediates, such as purified terephthalic acid, and ethylene glycols and oxide; aromatics, such as paraxylene, ortho xylene, benzene, and linear alkyl benzene and paraffin; and textiles comprising fabrics, apparel, and auto furnishings. In addition, the company offers elastomers, such as polybutadiene rubber, styrene butadiene rubber, and butyl rubber; fibre and yarn polyesters; and bioenergy solutions, consisting of compressed biogas, and pellets and briquettes. Further, it engages in oil and gas exploration and production activities; and operates various stores comprising supermarket, hypermarket, wholesale cash and carry, specialty, and online stores, as well as stores that offer apparel, beauty and cosmetics, accessories, footwear, consumer electronics, and others. Additionally, the company operates media and entertainment platforms, and Network18 and television channels; publishes magazines; and offers highway hospitality and fleet management services. It also provides digital services, including connectivity, fibre, mobile devices, apps, business, and other digital solutions. The company was founded in 1957 and is based in Mumbai, India.",
+        "error": null
+    }
+}

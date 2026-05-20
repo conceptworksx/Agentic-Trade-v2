@@ -14,6 +14,7 @@ from tools.utils.news_tool_helper import (
 )
 from dotenv import load_dotenv
 from tools.utils.retry_utils import retry_fetch
+from core.yf_context import YFinance401Error, yf_call
 from core.logging import get_logger
 from pathlib import Path
 
@@ -57,43 +58,55 @@ GLOBAL_DOMAINS = [
 ]
 
 
-def get_company_news(ticker: str) -> dict:
+def get_company_news(ticker: str, prefetched_news: list | None = None) -> dict:
     """
-    Fetch recent company-specific news using Yahoo Finance.
+    Process prefetched company news.
 
     Args:
-        ticker (str): Stock ticker (e.g., "RELIANCE.NS")
+        ticker (str): Stock ticker (e.g. "RELIANCE.NS")
+        prefetched_news (list | None): Already-fetched Yahoo news data
 
     Returns:
-        dict with status, ai_summary (empty), articles, and error (if any).
+        dict with status, ai_summary, articles, and error.
     """
-    logger.info(f"Fetching company news for {ticker}")
+
+    logger.info(f"Processing company news for {ticker}")
 
     result = {"status": "", "ai_summary": "", "articles": [], "error": None}
 
     try:
-        yf_news = retry_fetch(
-            lambda: yf.Ticker(ticker).get_news(),
-            retries=3,
-            label=f"yf_news_{ticker}",
-            caller="get_company_news",
-        )
+
+        # Ensure variable always exists
+        yf_news = prefetched_news or []
 
         if not yf_news:
             result["status"] = "no_news"
+            result["error"] = "No prefetched news available"
             return result
 
-        articles = _extract_news_fields(yf_news[:5])
+        articles = _extract_news_fields(yf_news[:5]) or []
 
         result["status"] = "success"
         result["articles"] = articles
+
+        return result
+
+    except YFinance401Error as e:
+
+        logger.error(f"401 in '{e.caller}' for {ticker}")
+
+        result["status"] = "error"
+        result["error"] = "401 Unauthorized — Yahoo Finance rejected the request"
+
         return result
 
     except Exception as e:
+
         logger.exception(f"Company news failed for {ticker}")
 
         result["status"] = "error"
         result["error"] = str(e)
+
         return result
 
 

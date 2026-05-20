@@ -1,4 +1,6 @@
 from graph.state import AgentState
+from tools.data_preftech import prefetch_ticker_bundle
+from tools.data_processor import process_prefetch_result
 from agents.analysis.market_analyst import MarketAnalyst
 from agents.analysis.news_analyst import NewsAnalyst
 from agents.analysis.sector_analyst import SectorAnalyst
@@ -18,9 +20,16 @@ news_analyst = NewsAnalyst()
 sector_analyst = SectorAnalyst()
 
 
+@handle_node_errors("data_prefetch")
+def run_data_prefetch(state: AgentState) -> dict:
+    bundle = prefetch_ticker_bundle(state["ticker_of_company"])
+    bundle = process_prefetch_result(bundle)
+    return {"data_bundle": bundle}
+
+
 @handle_node_errors("market_analyst")
 def run_market_analyst(state: AgentState) -> dict:
-    result = market_analyst.run()
+    result = market_analyst.run(state)
     return {"market_analyst_report": result}
 
 

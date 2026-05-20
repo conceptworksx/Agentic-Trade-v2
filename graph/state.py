@@ -29,6 +29,10 @@ class AgentState(TypedDict):
     ticker_of_company: Annotated[
         str, "The specific company ticker or name target for research."
     ]
+    data_bundle: Annotated[
+        dict,
+        "Pre-fetched data bundle containing all relevant financial and market information.",
+    ]
     sector_of_company: Annotated[
         str, "The industry vertical the company operates within (e.g., Tech, Energy)."
     ]
