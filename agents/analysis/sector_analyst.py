@@ -111,10 +111,18 @@ class SectorAnalyst(BaseAgent):
         # Fetches the actual PDF payload and runs the final sector analysis prompt
         report_generator = (
             RunnableLambda(fetch_sector_payload)
-            | RunnableLambda(_build_sector_report_message)
-            | self.prompt
-            | self.llm
-            | StrOutputParser()
+            | RunnableBranch(
+                (
+                    lambda x: x["sector_data"]["status"] == "failed",
+                    RunnableLambda(
+                        lambda x: f"Sector analysis aborted: {x['sector_data'].get('error', 'Sector PDF fetch failed')}"
+                    ),
+                ),
+                RunnableLambda(_build_sector_report_message)
+                | self.prompt
+                | self.llm
+                | StrOutputParser(),
+            )
         )
 
         # Main Pipeline: Fetch -> Resolve -> Analyze

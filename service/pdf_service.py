@@ -50,6 +50,10 @@ def get_pdf_content(pdf_name: str) -> dict:
             response.raise_for_status()
 
         content, total_pages = extract_text_from_pdf_stream(io.BytesIO(response.content))
+        if total_pages == 0:
+            raise ValueError(f"PDF '{formatted_name}' contains no pages or could not be parsed")
+        if not content.strip():
+            raise ValueError(f"PDF '{formatted_name}' contains no extractable text")
         return {"content": content, "total_pages": total_pages}
 
     try:

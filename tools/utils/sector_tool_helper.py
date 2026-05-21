@@ -81,11 +81,11 @@ def _fetch_sector_data(sector_name: str) -> dict[str, Any]:
 
     # Call Cloudinary directly via the shared service (bypass local API server)
     pdf_result = get_pdf_content(sector_name)
-    
-    if pdf_result["status"] == "success":
+
+    if pdf_result["status"] == "success" and pdf_result.get("content") and pdf_result.get("total_pages", 0) > 0:
         result["data"] = pdf_result
         result["status"] = "success"
     else:
-        result["error"] = pdf_result["error"]
-    
+        result["error"] = pdf_result.get("error") or "Sector report PDF is unavailable or contains no text."
+
     return result
