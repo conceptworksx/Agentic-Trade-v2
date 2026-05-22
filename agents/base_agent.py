@@ -26,8 +26,8 @@ class BaseAgent:
 
     prompt_path: str = ""
 
-    def __init__(self):
-        self.llm = get_llm()
+    def __init__(self, groq_api_key: str = None):
+        self.llm = get_llm(api_key=groq_api_key)
 
         yaml_instructions = load_structured_prompt(self.prompt_path)
 

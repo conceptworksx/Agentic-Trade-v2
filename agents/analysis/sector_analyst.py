@@ -63,8 +63,9 @@ class SectorAnalyst(BaseAgent):
 
     prompt_path = "prompts/sector_analyst_prompt.yaml"
 
-    def __init__(self):
-        super().__init__()
+    def __init__(self, groq_api_key: str):
+
+        super().__init__(groq_api_key)
 
         # Load the specialized prompt for sector resolution
         sector_resolver_prompt_yaml = load_structured_prompt(

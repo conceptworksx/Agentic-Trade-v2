@@ -149,3 +149,16 @@ def validate_ticker_exists(
             )
 
     return True, None
+
+def validate_api_keys(groq_api_key: str) -> tuple[bool, str]:
+    if not groq_api_key or not groq_api_key.strip():
+        return False, "Groq API key is required."
+
+    if not groq_api_key.startswith("gsk_"):
+        return False, (
+            "Invalid Groq API key format. "
+            "Groq keys start with 'gsk_'. "
+            "Get yours at console.groq.com"
+        )
+
+    return True, ""

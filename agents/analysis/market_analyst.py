@@ -56,10 +56,10 @@ SENSEX:
 class MarketAnalyst(BaseAgent):
 
     prompt_path = "prompts/market_analyst_prompt.yaml"
+    
+    def __init__(self, groq_api_key: str):
 
-    def __init__(self):
-
-        super().__init__()
+        super().__init__(groq_api_key)
 
         # Define the success and error chains for the Market Analyst
         success_chain = (

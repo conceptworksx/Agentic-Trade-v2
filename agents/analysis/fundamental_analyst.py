@@ -59,9 +59,9 @@ class FundamentalAnalyst(BaseAgent):
 
     prompt_path = "prompts/fundamental_analyst_prompt.yaml"
 
-    def __init__(self):
+    def __init__(self, groq_api_key: str):
 
-        super().__init__()
+        super().__init__(groq_api_key)
 
         # Define the success and error chains for the Fundamental Analyst
         success_chain = (

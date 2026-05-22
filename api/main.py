@@ -1,35 +1,35 @@
 # api/main.py
 
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from pydantic import BaseModel,field_validator
 import uvicorn
 from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
 from slowapi.util import get_remote_address
 from slowapi.errors import RateLimitExceeded
-
 from api.validators import (
     validate_ticker_format,
     validate_ticker_exists,
+    validate_api_keys,
     _refresh_cache_if_stale,
 )
-from core.logging import get_logger
 from graph.builder import build_graph
 import asyncio
 
+from core.logging import setup_logging, get_logger
+
+setup_logging()
 logger = get_logger(__name__)
-
-# Build graph once at startup
-graph = build_graph()
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """
     Preload NSE ticker cache at startup.
     """
+    logger.info("Preloading NSE ticker cache...")
     _refresh_cache_if_stale()
+    logger.info("NSE ticker cache ready")
     yield
 
 
@@ -87,15 +87,26 @@ def health_check():
 
 @app.post("/analyze", response_model=AnalyzeResponse)
 @limiter.limit("3/minute")
-async def analyze(request: Request, body: AnalyzeRequest):
-
+async def analyze(request: Request, body: AnalyzeRequest, groq_api_key: str = Header(..., alias="Groq-API-Key")):
+    
+    logger.info("Testing key scrubber: gsk_1234567890abcdefghijklmnopqrstuvwxyz")
     ticker = body.ticker.strip().upper()
+    logger.info(f"Analyze request received | ticker={ticker}")
+    
+    is_valid_key, key_error = validate_api_keys(groq_api_key=groq_api_key)
 
-    # ── Level 1 — format validation ────────────────────────────────────────
-
+    # validate key format
+    if not is_valid_key:
+        raise HTTPException(
+            status_code=422,
+            detail={"error": "invalid_api_key", "message": key_error}
+        )
+    
     is_valid_format, format_error = validate_ticker_format(ticker)
-
+    
+    # validate ticker format
     if not is_valid_format:
+        logger.warning(f"Invalid ticker format received | ticker={ticker}")
         raise HTTPException(
             status_code=422,
             detail={
@@ -105,11 +116,12 @@ async def analyze(request: Request, body: AnalyzeRequest):
             },
         )
 
-    # ── Level 2 — existence validation ─────────────────────────────────────
 
+    # validate ticker exists
     is_valid_ticker, ticker_error = validate_ticker_exists(ticker)
 
     if not is_valid_ticker:
+        logger.warning(f"Ticker not found | ticker={ticker}")
         raise HTTPException(
             status_code=404,
             detail={
@@ -118,13 +130,15 @@ async def analyze(request: Request, body: AnalyzeRequest):
             },
         )
 
-    # ── Run LangGraph workflow ─────────────────────────────────────────────
-
+    # Run LangGraph workflow 
     try:
-
+        logger.info(f"Starting graph execution | ticker={ticker}")
+        # Graph built per request
+        graph = build_graph(groq_api_key=groq_api_key)
         final_state = await asyncio.to_thread(
             graph.invoke, {"ticker_of_company": ticker}
         )
+        logger.info(f"Graph execution completed | ticker={ticker}")
 
         return AnalyzeResponse(
             ticker=ticker,
@@ -137,7 +151,7 @@ async def analyze(request: Request, body: AnalyzeRequest):
         )
 
     except Exception as e:
-
+        logger.exception(f"Analysis failed | ticker={ticker} | error={e}")
         raise HTTPException(
             status_code=500,
             detail={
