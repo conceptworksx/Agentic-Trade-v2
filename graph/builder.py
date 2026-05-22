@@ -39,7 +39,7 @@ def build_graph():
 
 
 try:
-    app = build_graph()
+    compiled_graph = build_graph()
 
 except Exception as e:
 

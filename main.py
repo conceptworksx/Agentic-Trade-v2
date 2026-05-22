@@ -12,17 +12,14 @@ from core.logging import setup_logging
 
 setup_logging()
 
-from graph.builder import app
+from graph.builder import compiled_graph
 
 
 def run_app(ticker: str):
     try:
-        result = app.invoke(
+        result = compiled_graph.invoke(
             {
-                "ticker_of_company": ticker,
-                "investment_debate": {
-                    "debate_rounds": 0,
-                },
+                "ticker_of_company": ticker
             }
         )
 
