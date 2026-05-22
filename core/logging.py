@@ -1,4 +1,5 @@
 import logging
+import re
 import logging.handlers
 import os
 import sys
@@ -20,6 +21,29 @@ LOG_FILES = {
     "main":    LOG_DIR / "main.log",       # full run log, all levels
 }
 
+class _ScrubSecretsFilter(logging.Filter):
+    """
+    Redacts API keys and secrets from logs.
+    """
+
+    PATTERNS = [
+        re.compile(r"sk-[A-Za-z0-9\-_]{10,}"),       # OpenAI
+        re.compile(r"gsk_[A-Za-z0-9\-_]{10,}"),      # Groq
+        re.compile(r"tvly-[A-Za-z0-9\-_]{10,}"),     # Tavily
+    ]
+
+    def filter(self, record: logging.LogRecord) -> bool:
+
+        message = str(record.getMessage())
+
+        for pattern in self.PATTERNS:
+            message = pattern.sub("[REDACTED]", message)
+
+        record.msg = message
+        record.args = ()
+
+        return True
+    
 
 _MODULE_ROUTING = {
     "agents":                    "agent",
@@ -70,6 +94,7 @@ def _make_console_handler(level: int = logging.INFO) -> logging.StreamHandler:
     handler = logging.StreamHandler(sys.stdout)
     handler.setLevel(level)
     handler.setFormatter(_ConsoleFormatter(LOG_FORMAT, datefmt=DATE_FORMAT))
+    handler.addFilter(_ScrubSecretsFilter())
     return handler
 
 
@@ -91,6 +116,7 @@ def _make_file_handler(
     )
     handler.setLevel(level)
     handler.setFormatter(_FileFormatter(LOG_FORMAT, datefmt=DATE_FORMAT))
+    handler.addFilter(_ScrubSecretsFilter())
     return handler
 
 
@@ -105,6 +131,7 @@ def _make_error_file_handler(filepath: Path) -> logging.handlers.RotatingFileHan
     )
     handler.setLevel(logging.ERROR)
     handler.setFormatter(_FileFormatter(LOG_FORMAT, datefmt=DATE_FORMAT))
+    handler.addFilter(_ScrubSecretsFilter())
     return handler
 
 

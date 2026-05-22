@@ -58,17 +58,17 @@ class TechnicalAnalyst(BaseAgent):
 
     prompt_path = "prompts/technical_analyst_prompt.yaml"
 
-    def __init__(self):
+    def __init__(self, groq_api_key: str):
 
-        super().__init__()
+        super().__init__(groq_api_key)
 
         # Define the success and error chains for the Technical Analyst
         success_chain = (
             RunnableLambda(_build_messages) | self.prompt | self.llm | StrOutputParser()
         )
-
         error_chain = RunnableLambda(
-            lambda x: f"Failed to fetch technical data for {x['ticker']}: {x['error']}"
+            lambda x: f"Failed to fetch fundamental data for "
+            f"{x.get('ticker', 'N/A')}: {x.get('error', 'Unknown error')}"
         )
 
         # Apply a branching logic to handle cases where technical data is successfully fetched vs when it fails

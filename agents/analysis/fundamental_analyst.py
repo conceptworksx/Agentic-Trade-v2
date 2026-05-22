@@ -59,18 +59,19 @@ class FundamentalAnalyst(BaseAgent):
 
     prompt_path = "prompts/fundamental_analyst_prompt.yaml"
 
-    def __init__(self):
+    def __init__(self, groq_api_key: str):
 
-        super().__init__()
+        super().__init__(groq_api_key)
 
         # Define the success and error chains for the Fundamental Analyst
         success_chain = (
             RunnableLambda(_build_messages) | self.prompt | self.llm | StrOutputParser()
         )
 
+        
         error_chain = RunnableLambda(
             lambda x: f"Failed to fetch fundamental data for "
-            f"{x['ticker']}: {x['error']}"
+            f"{x.get('ticker', 'N/A')}: {x.get('fundamental_data', {}).get('error', 'Unknown error')}"
         )
 
         # Apply branching logic to handle success and failure scenarios based on the presence of fundamental data
