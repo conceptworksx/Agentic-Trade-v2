@@ -68,9 +68,10 @@ class FundamentalAnalyst(BaseAgent):
             RunnableLambda(_build_messages) | self.prompt | self.llm | StrOutputParser()
         )
 
+        
         error_chain = RunnableLambda(
             lambda x: f"Failed to fetch fundamental data for "
-            f"{x['ticker']}: {x['error']}"
+            f"{x.get('ticker', 'N/A')}: {x.get('fundamental_data', {}).get('error', 'Unknown error')}"
         )
 
         # Apply branching logic to handle success and failure scenarios based on the presence of fundamental data
