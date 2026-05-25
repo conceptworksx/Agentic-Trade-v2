@@ -11,6 +11,8 @@ from tools.utils.news_tool_helper import (
     _score_global,
     _score_indian,
     _safe_tavily_search,
+    _get_news_cached,
+    _set_news_cached
 )
 from dotenv import load_dotenv
 from tools.utils.retry_utils import retry_fetch
@@ -116,8 +118,15 @@ def get_indian_market_news() -> dict:
     Returns:
         dict with status, ai_summary, articles, and error (if any).
     """
-    logger.info("Fetching Indian market news")
+    
+    cache_key = "indian_market_news"
+    cached = _get_news_cached(cache_key)
 
+    if cached is not None:
+        logger.info("Returning cached Indian market news")
+        return cached
+    
+    logger.info("Fetching Indian market news")
     result = {"status": "", "ai_summary": "", "articles": [], "error": None}
 
     all_articles = []
@@ -158,6 +167,7 @@ def get_indian_market_news() -> dict:
         result["status"] = "success"
         result["ai_summary"] = summaries[0] if summaries else ""
         result["articles"] = _get_top5(filtered)
+        _set_news_cached(cache_key, result)
 
         return result
 
@@ -176,8 +186,15 @@ def get_global_market_news() -> dict:
     Returns:
         dict with status, ai_summary, articles, and error (if any).
     """
-    logger.info("Fetching global market news")
+    
+    cache_key = "global_market_news"    # fixed key — same news for all users
 
+    cached = _get_news_cached(cache_key)
+    if cached is not None:
+        logger.info("Returning cached global market news")
+        return cached
+    
+    logger.info("Fetching global market news")
     result = {"status": "", "ai_summary": "", "articles": [], "error": None}
 
     all_articles = []
@@ -218,7 +235,7 @@ def get_global_market_news() -> dict:
         result["status"] = "success"
         result["ai_summary"] = summaries[0] if summaries else ""
         result["articles"] = _get_top5(filtered)
-
+        _set_news_cached(cache_key, result)
         return result
 
     except Exception as e:

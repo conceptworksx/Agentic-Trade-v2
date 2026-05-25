@@ -3,9 +3,37 @@ import yfinance as yf
 from tavily import TavilyClient
 from email.utils import parsedate_to_datetime
 from core.logging import get_logger
+import time
+import threading
 
 logger = get_logger(__name__)
+# tools/news_tools.py — add at top alongside existing imports
 
+# News cache
+_news_cache      : dict           = {}
+_news_cache_lock : threading.Lock = threading.Lock()
+
+_NEWS_CACHE_TTL : int = 900 #15 mins
+
+
+def _get_news_cached(key: str) -> dict | None:
+    with _news_cache_lock:
+        entry = _news_cache.get(key)
+        if entry is None:
+            return None
+        data, cached_at = entry
+        if time.time() - cached_at > _NEWS_CACHE_TTL:
+            del _news_cache[key]
+            logger.info(f"[news_cache] expired | key={key}")
+            return None
+        logger.info(f"[news_cache] hit | key={key}")
+        return data
+
+
+def _set_news_cached(key: str, data: dict) -> None:
+    with _news_cache_lock:
+        _news_cache[key] = (data, time.time())
+        logger.info(f"[news_cache] stored | key={key}")
 
 def _safe_tavily_search(
     client: TavilyClient, query: str, domains: List[str], tag: str

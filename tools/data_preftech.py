@@ -1,8 +1,8 @@
 import threading
-import pandas as pd
 import yfinance as yf
 
 from core.yf_context import yf_call, YFinance401Error
+from tools.utils.data_prefetch_helper import (_normalize_df, _get_cached , _set_cached)
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -31,30 +31,6 @@ _MARKET_TICKERS: dict[str, str] = {
     "BSESN": "^BSESN",
     "IXIC": "^IXIC",
 }
-
-
-# ── Shared DataFrame normalizer ──────────────────────────────────────────────
-
-
-def _normalize_df(df: pd.DataFrame | None) -> pd.DataFrame | None:
-    """Clean and standardize a raw yfinance OHLCV DataFrame."""
-
-    if df is None or df.empty:
-        return None
-
-    df = df.dropna(how="any")
-
-    if df.empty:
-        return None
-
-    df.index = pd.to_datetime(df.index).tz_localize(None)
-    df.sort_index(inplace=True)
-
-    if isinstance(df.columns, pd.MultiIndex):
-        df.columns = df.columns.get_level_values(0)
-
-    return df
-
 
 # ── Main prefetch function ───────────────────────────────────────────────────
 
@@ -103,6 +79,11 @@ def prefetch_ticker_bundle(ticker: str) -> dict:
         }
     """
 
+    cached = _get_cached(ticker)
+    if cached:
+        logger.info("Returning cached data")
+        return cached
+    
     bundle: dict = {
         "ticker": ticker,
         "status": "success",
@@ -312,5 +293,8 @@ def prefetch_ticker_bundle(ticker: str) -> dict:
         f"| company={info.get('longName', 'N/A')} "
         f"| indices={list(bundle['market_indices'].keys())}"
     )
+
+    if bundle["status"] == "success":
+        _set_cached(ticker, bundle)
 
     return bundle
