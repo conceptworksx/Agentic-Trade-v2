@@ -51,7 +51,7 @@ export function DebateRoom({ data }: { data: AnalyseResponse }) {
       </div>
       <div className="h-px w-full bg-[var(--border)]" />
       <p className="mt-2 font-mono text-[12px] text-[var(--muted-foreground)]">
-        {ticker} · Bull–Bear–Manager thread
+        {ticker.split(".")[0]} · Bull–Bear–Manager thread
       </p>
 
       <div className="mt-6 flex flex-col gap-4">
@@ -114,7 +114,7 @@ function Bubble({
 
   return (
     <div
-      className="border border-[var(--border)] bg-white dark:bg-zinc-900 p-5"
+      className="border border-[var(--border)] bg-white p-6 rounded-xl shadow-sm"
       style={{ borderLeft: `4px solid ${color}` }}
     >
       <div className="mb-3 flex items-center gap-2 font-mono text-[11px] font-bold tracked">
@@ -138,14 +138,14 @@ function VerdictCard({
   const color = decisionColor(decision);
   return (
     <div
-      className="mt-8 bg-white dark:bg-zinc-900 p-10 text-center"
+      className="mt-8 bg-white p-10 text-center rounded-xl shadow-sm"
       style={{ border: `2px solid ${color}` }}
     >
       <div className="font-mono text-[10px] tracked text-[var(--label)]">
         FINAL VERDICT
       </div>
       <div
-        className="my-4 font-mono text-[32px] font-bold leading-none"
+        className="my-4 font-mono text-[24px] font-bold leading-none"
         style={{ color }}
       >
         {decision}
@@ -154,7 +154,7 @@ function VerdictCard({
         {rationale}
       </p>
       <div className="mt-6 font-mono text-[11px] text-[var(--label)]">
-        Issued for: {ticker}.NS · NSE
+        Issued for: {ticker.split(".")[0]} · NSE
         <br />
         Decision by: AI Manager Agent
       </div>

@@ -42,10 +42,10 @@ export function ReportView({
       </div>
       <div className="h-px w-full bg-[var(--border)]" />
       <p className="mt-2 font-mono text-[12px] text-[var(--muted-foreground)]">
-        {ticker} · Report generated · {status}
+        {ticker.split(".")[0]} · Report generated · {status}
       </p>
 
-      <div className="mt-6 border border-[var(--border)] bg-white dark:bg-zinc-900 p-6">
+      <div className="mt-6 border border-[var(--border)] bg-white p-8 rounded-xl shadow-sm">
         <Markdown content={content} />
       </div>
     </div>
@@ -54,7 +54,7 @@ export function ReportView({
 
 export function Markdown({ content }: { content: string }) {
   return (
-    <div className="prose prose-sm prose-zinc max-w-none prose-headings:font-mono prose-h2:border-b prose-h2:border-[var(--border)] prose-h2:pb-1 prose-strong:text-[var(--foreground)] prose-code:bg-[var(--background)] prose-code:px-1 prose-code:py-0.5 prose-code:font-mono prose-code:text-[12px] prose-code:before:content-none prose-code:after:content-none prose-table:text-[13px] prose-th:border prose-th:border-[var(--border)] prose-th:bg-[var(--background)] prose-th:px-3 prose-th:py-2 prose-td:border prose-td:border-[var(--border)] prose-td:px-3 prose-td:py-2 prose-a:text-[var(--foreground)] prose-a:no-underline hover:prose-a:underline">
+    <div className="prose max-w-none">
       <ReactMarkdown remarkPlugins={[remarkGfm]}>{content}</ReactMarkdown>
     </div>
   );

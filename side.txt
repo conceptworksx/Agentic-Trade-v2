@@ -1,0 +1,381 @@
+# AI Agent Trading Platform — Complete UI Prompt
+
+## Project Overview
+Build a **Next.js 14 (App Router) + Tailwind CSS** frontend for an AI multi-agent stock research platform focused exclusively on **Indian stock markets (NSE)**. The platform sends a ticker symbol to a Python backend (`POST /anyalse`), receives structured analyst reports + a bull-bear debate + final verdict, and presents them in a clean research terminal UI.
+
+---
+
+## Design System
+
+**Palette — "Editorial White"**
+```
+Background:        #F8F8F6  (warm off-white, never pure white)
+Surface cards:     #FFFFFF
+Borders:           #E4E4E0
+Primary text:      #111110  (near-black)
+Secondary text:    #888884
+Muted label:       #BBBBB7
+Accent – BUY:      #16A34A  (green-600)
+Accent – SELL:     #DC2626  (red-600)
+Accent – HOLD:     #D97706  (amber-600)
+Active sidebar:    #111110  (inverted — black bg, white text)
+```
+
+**Typography**
+- Body + UI: `Inter`
+- Tickers, verdicts, mono data: `JetBrains Mono`
+- Install both via `next/font/google`
+
+**Aesthetic:** WSJ meets Notion. Clean, editorial, high information density. Sharp corners everywhere. No gradients. No shadows (except `shadow-sm` on cards). Borders do the heavy lifting. The only color on the entire page is the verdict badge.
+
+---
+
+## Data & API Contracts
+
+### Ticker Data (client-side, no API needed)
+```js
+// /public/nse-tickers.json
+// Array of objects — build from NSE500 list
+[
+  { "symbol": "RELIANCE", "name": "Reliance Industries Ltd" },
+  { "symbol": "TCS", "name": "Tata Consultancy Services Ltd" },
+  { "symbol": "INFY", "name": "Infosys Ltd" },
+  // ... 500 entries
+]
+```
+Use `fuse.js` for fuzzy client-side search. User **must select from dropdown** — free-text submission is disabled.
+
+### Backend API
+```
+POST /anyalse
+Body: { "ticker": "RELIANCE" }
+
+Response:
+{
+  "ticker": "string",
+  "news_report": "string",        // markdown
+  "technical_report": "string",   // markdown
+  "fundamental_report": "string", // markdown
+  "market_report": "string",      // markdown
+  "sector_report": "string",      // markdown
+  "investment_debate": {
+    "bull_thesis": "string",       // markdown
+    "bear_thesis": "string",       // markdown
+    "speaker_history": ["bull", "bear", "manager"],
+    "last_speaker": "manager",
+    "final_decision": {
+      "decision": "HOLD | BUY | SELL",
+      "rationale": "string"
+    }
+  },
+  "research_verdict": {
+    "decision": "HOLD | BUY | SELL",
+    "rationale": "string"
+  },
+  "status": "string"
+}
+```
+
+---
+
+## Page 1 — Ticker Search `app/page.tsx`
+
+### Layout
+Full viewport height. Centered column. Max width `480px`. Background `#F8F8F6`.
+
+### Structure (top to bottom)
+
+**Wordmark**
+```
+ARBOR RESEARCH          ← or your actual product name
+──────────────────────
+AI-powered equity research for Indian markets
+```
+- Wordmark: `JetBrains Mono`, 13px, tracked wide, `#111110`
+- Divider: thin `#E4E4E0` rule
+- Tagline: `Inter`, 13px, `#888884`
+- Vertically centered in viewport, not top-aligned
+
+**Search Input**
+- Label above input: `SEARCH NSE TICKER` — 11px, tracked, `#BBBBB7`, uppercase
+- Input field:
+  - Full width, height `48px`, border `1px solid #E4E4E0`
+  - Background `#FFFFFF`, text `#111110`, mono font
+  - Placeholder: `e.g. RELIANCE, TCS, INFY...` in `#BBBBB7`
+  - On focus: border becomes `#111110`
+  - No border-radius (sharp corners throughout)
+- As user types → show dropdown below input
+
+**Dropdown**
+- White bg, border `1px solid #E4E4E0`, border-top none (connects to input)
+- Each row `44px` tall, `px-4`
+- Left: `SYMBOL` — mono, 13px, `#111110`, bold
+- Right: `Company Name` — Inter, 13px, `#888884`
+- Hover state: bg `#F8F8F6`
+- Keyboard navigation: up/down arrows, Enter to select
+- Max 8 rows visible, scrollable
+- On selection: input fills with `SYMBOL — Company Name`, dropdown closes
+
+**Analyse Button**
+- Appears only after ticker selected from dropdown
+- Full width, height `48px`
+- Background `#111110`, text `#F8F8F6`, Inter 14px medium
+- Label: `Analyse RELIANCE →` (shows selected ticker)
+- Hover: bg `#333330`
+- On click: POST to backend, navigate to `/research/[ticker]`
+
+---
+
+## Loading Screen (between Page 1 and Page 2)
+
+Shown while awaiting API response. Full screen `#F8F8F6`.
+
+```
+Center of screen:
+
+  ARBOR RESEARCH
+  ──────────────
+  Initialising agents for RELIANCE...
+
+  [●  ○  ○  ○  ○]   Fetching news signals
+```
+
+- Use a simple animated dot/step indicator cycling through these labels (purely cosmetic, not tied to actual progress):
+  1. `Fetching news signals`
+  2. `Running technical analysis`
+  3. `Evaluating fundamentals`
+  4. `Scanning market & sector data`
+  5. `Bull-Bear debate in session...`
+  6. `Manager reviewing verdict`
+- Cycle every 1.8 seconds automatically
+- All text mono, muted palette
+- No spinner. No skeleton. Just text + dot stepper — feels like a terminal
+
+---
+
+## Page 2 — Research Dashboard `app/research/[ticker]/page.tsx`
+
+### Overall Layout
+```
+┌─────────────────────────────────────────────────────┐
+│  NAVBAR                                             │
+├──────────────┬──────────────────────────────────────┤
+│              │                                      │
+│  LEFT        │   MAIN PANEL                        │
+│  SIDEBAR     │                                      │
+│  240px       │   flex-1                            │
+│              │                                      │
+└──────────────┴──────────────────────────────────────┘
+```
+
+Height: `100vh`. No page scroll — sidebar and main panel scroll independently.
+
+---
+
+### Navbar (full width, `h-14`)
+- Background `#FFFFFF`, bottom border `1px solid #E4E4E0`
+- Left: `ARBOR RESEARCH` wordmark (mono, small)
+- Center: `RELIANCE.NS · NSE · Equity Research` — mono, 13px, `#888884`
+- Right:
+  - Small verdict badge — `BUY` / `SELL` / `HOLD` with color dot — shows `research_verdict.decision`
+  - `← New Search` text button in `#888884`
+
+---
+
+### Left Sidebar (`w-60`, full height, `overflow-y-auto`)
+- Background `#FFFFFF`, right border `1px solid #E4E4E0`
+- Top section label: `ANALYSTS` — 10px, tracked, `#BBBBB7`, `px-4 pt-5 pb-2`
+
+**Analyst Panels (5 items)**
+Each item is a sidebar row:
+```
+  [icon]  News Analyst
+  [icon]  Technical Analyst
+  [icon]  Fundamental Analyst
+  [icon]  Market Analyst
+  [icon]  Sector Analyst
+```
+- Row height `40px`, `px-4`, Inter 13px
+- Icon: 16px lucide icon (e.g. `Newspaper`, `LineChart`, `BarChart2`, `Globe`, `Layers`)
+- Default state: text `#888884`, bg transparent
+- **Active state: bg `#111110`, text `#FFFFFF`, icon white** — sharp, inverted pill look (actually full-width row, no pill)
+- Click → loads that report in main panel
+
+**Divider + Debate Room section**
+```
+  ──────────────────────
+  DEBATE ROOM
+  [icon]  Bull Analyst
+  [icon]  Bear Analyst
+  [icon]  Manager Decision
+```
+- Same row style as above
+- Icons: `TrendingUp` (bull, `#16A34A` when active), `TrendingDown` (bear, `#DC2626` when active), `Gavel` (manager)
+- For debate items, active state uses the verdict color instead of black
+
+**Bottom of sidebar**
+```
+  ──────────────────────
+  VERDICT
+  [●] HOLD               ← colored dot + decision text, mono
+```
+- Static display, not clickable
+- Color of dot = verdict color
+
+---
+
+### Main Panel (`flex-1`, `overflow-y-auto`, `p-8`)
+Background `#F8F8F6`.
+
+Default view on load: **News Analyst** is selected.
+
+---
+
+#### Report View (for all 5 analyst reports)
+
+**Header block**
+```
+News Analyst                          [↓ PDF]  [↓ MD]
+─────────────────────────────────────────────────────
+RELIANCE · Report generated · {status}
+```
+- Title: Inter 18px, `#111110`, medium
+- Subtitle line: mono 12px, `#888884`
+- Download buttons: text buttons, 12px, `#888884`, hover `#111110`
+  - PDF: use `react-pdf` or `jsPDF` — render the markdown content into a clean PDF
+  - MD: `Blob` download of the raw markdown string
+
+**Report Body**
+- Render markdown using `react-markdown` + `remark-gfm`
+- Wrap in a white card: `bg-white border border-[#E4E4E0] p-6`
+- Markdown styles (apply via Tailwind `prose` plugin — use `prose-zinc prose-sm`):
+  - `h2`: mono, border-bottom `#E4E4E0`
+  - `strong`: `#111110`
+  - `table`: clean, alternating row `#F8F8F6`
+  - `code`: mono, bg `#F8F8F6`, no border-radius
+  - Links: underline only on hover
+
+---
+
+#### Bull Analyst View
+
+**Header**
+```
+Bull Analyst — Investment Thesis        [↓ PDF]  [↓ MD]
+────────────────────────────────────────────────────────
+```
+Left green dot indicator: `●` in `#16A34A`
+
+**Body**
+White card. Render `investment_debate.bull_thesis` as markdown. Same `prose` styles.
+
+---
+
+#### Bear Analyst View
+
+Same structure as Bull but with `#DC2626` red dot and `investment_debate.bear_thesis`.
+
+---
+
+#### Manager Decision View — "Debate Room"
+
+This is the most important view. Give it more visual weight.
+
+**Header**
+```
+Debate Room — Bull vs Bear              [↓ PDF]  [↓ MD]
+────────────────────────────────────────────────────────
+```
+
+**Debate Thread (top section of card)**
+Render the conversation using `speaker_history` array. Each turn is a message bubble:
+
+```
+┌────────────────────────────────────────────────┐
+│  🟢 BULL ANALYST                               │
+│  [bull_thesis rendered as markdown]            │
+└────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────┐
+│  🔴 BEAR ANALYST                               │
+│  [bear_thesis rendered as markdown]            │
+└────────────────────────────────────────────────┘
+
+┌────────────────────────────────────────────────┐
+│  ⚖  MANAGER                                   │
+│  [final_decision.rationale as markdown]        │
+└────────────────────────────────────────────────┘
+```
+
+- Each bubble: white card, left border `4px` in speaker color (green / red / `#111110`)
+- Speaker label: mono 11px, tracked, bold
+- Body: `prose-sm` markdown
+- Cards stacked vertically with `gap-4`, slight indent alternation optional
+
+**Verdict Card (bottom of Debate Room view)**
+```
+┌──────────────────────────────────────────────────────┐
+│                                                      │
+│   FINAL VERDICT                                      │
+│                                                      │
+│            ████  HOLD  ████                         │
+│                                                      │
+│   [rationale text from research_verdict.rationale]   │
+│                                                      │
+│   Issued for: RELIANCE.NS · NSE                      │
+│   Decision by: AI Manager Agent                      │
+│                                                      │
+└──────────────────────────────────────────────────────┘
+```
+- Card bg: `#FFFFFF`, border `2px solid` in verdict color
+- `FINAL VERDICT` label: 10px, tracked, `#BBBBB7`
+- Decision word: `JetBrains Mono`, 32px, bold, verdict color
+- Rationale: Inter 14px, `#888884`, italic
+- Bottom meta: mono 11px, `#BBBBB7`
+- This card is **not downloadable separately** — it's included in the full Debate Room download
+
+---
+
+## Component File Structure
+```
+app/
+├── page.tsx                        ← Ticker search
+├── research/
+│   └── [ticker]/
+│       └── page.tsx                ← Research dashboard
+components/
+├── TickerSearch.tsx                ← Input + fuzzy dropdown
+├── LoadingScreen.tsx               ← Animated terminal loader
+├── Sidebar.tsx                     ← Left nav with active state
+├── ReportView.tsx                  ← Markdown report renderer + download
+├── DebateRoom.tsx                  ← Thread + verdict card
+├── VerdictBadge.tsx                ← Navbar badge (BUY/SELL/HOLD)
+lib/
+├── api.ts                          ← POST /anyalse fetch wrapper
+├── download.ts                     ← PDF + MD download helpers
+public/
+└── nse-tickers.json                ← Static NSE500 ticker list
+```
+
+---
+
+## Key Packages to Install
+```bash
+npm install fuse.js react-markdown remark-gfm jspdf html2canvas lucide-react
+```
+- `fuse.js` — fuzzy ticker search
+- `react-markdown` + `remark-gfm` — render all markdown reports
+- `jspdf` + `html2canvas` — PDF download of report sections
+- `lucide-react` — sidebar icons
+- `@tailwindcss/typography` — for `prose` markdown styles (add to `tailwind.config.js`)
+
+---
+
+## Constraints & Notes
+1. **No pure black (`#000000`) or pure white (`#FFFFFF`) as backgrounds** — always use the warm off-white / card white distinction
+2. **The only colors on the page are the three verdict accents** — everything else is zinc/warm-gray
+3. All corners are **sharp (no border-radius)** except the verdict decision word which can have `rounded-sm`
+4. **Mobile is not a priority** — design for `min-width: 1024px` desktop
+5. Store API response in `sessionStorage` keyed by ticker — so sidebar switching doesn't re-fetch
+6. If `status` from API is not `"success"`, show an inline error state in the main panel (not a modal)
+7. The `speaker_history` array drives debate order — render bubbles in that sequence, pulling content from `bull_thesis`, `bear_thesis`, or `final_decision.rationale` based on speaker name

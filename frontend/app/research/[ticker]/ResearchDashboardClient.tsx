@@ -57,7 +57,7 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
           <p className="mt-3 text-[14px] text-[var(--foreground)]">{error}</p>
           <button
             onClick={() => router.push("/")}
-            className="mt-6 h-10 border border-[var(--border)] bg-white px-4 font-mono text-[12px] hover:border-[var(--foreground)] dark:bg-zinc-900"
+            className="mt-6 h-10 border border-[var(--border)] bg-white px-4 font-mono text-[12px] hover:border-[var(--foreground)] rounded-lg shadow-sm"
           >
             ← New Search
           </button>
@@ -74,12 +74,12 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
   return (
     <div className="flex h-screen flex-col">
       {/* Navbar */}
-      <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--border)] bg-white px-5 dark:bg-zinc-950">
+      <header className="flex h-14 shrink-0 items-center justify-between border-b border-[var(--border)] bg-white px-5">
         <div className="font-mono text-[13px] tracking-wider text-[var(--foreground)]">
           ARBOR RESEARCH
         </div>
         <div className="font-mono text-[13px] text-[var(--muted-foreground)]">
-          {data.ticker}.NS · NSE · Equity Research
+          {data.ticker.split(".")[0].toUpperCase()}.NS · NSE
         </div>
         <div className="flex items-center gap-4">
           <VerdictBadge decision={verdict} />
@@ -97,7 +97,7 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
 
         <main className="flex-1 overflow-y-auto bg-[var(--background)] p-8">
           {isError ? (
-            <div className="mx-auto max-w-[920px] border border-[var(--sell)] bg-white p-6 dark:bg-zinc-900">
+            <div className="mx-auto max-w-[920px] border border-[var(--sell)] bg-white p-6 rounded-xl shadow-sm">
               <p className="font-mono text-[11px] tracking-wider text-[var(--sell)]">
                 STATUS: {data.status}
               </p>
