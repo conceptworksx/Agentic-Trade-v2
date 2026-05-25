@@ -84,7 +84,7 @@ export function Sidebar({
 
 function SectionLabel({ children }: { children: React.ReactNode }) {
   return (
-    <div className="px-4 pb-2 pt-5 font-mono text-[10px] tracked text-[var(--label)]">
+    <div className="px-4 pb-2 pt-6 font-mono text-[11px] font-bold tracking-widest text-zinc-500">
       {children}
     </div>
   );

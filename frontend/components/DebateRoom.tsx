@@ -34,16 +34,16 @@ export function DebateRoom({ data }: { data: AnalyseResponse }) {
         <h2 className="text-[18px] font-medium text-[var(--foreground)]">
           Debate Room — Bull vs Bear
         </h2>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-2">
           <button
             onClick={() => downloadPdf(`${ticker}_debate_room`, fullMd)}
-            className="font-mono text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            className="flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-zinc-50/50 px-2.5 py-1 font-mono text-[11px] font-semibold text-[var(--muted-foreground)] transition-all hover:bg-zinc-100 hover:text-[var(--foreground)] shadow-xs"
           >
             ↓ PDF
           </button>
           <button
             onClick={() => downloadMarkdown(`${ticker}_debate_room`, fullMd)}
-            className="font-mono text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            className="flex items-center gap-1.5 rounded-md border border-[var(--border)] bg-zinc-50/50 px-2.5 py-1 font-mono text-[11px] font-semibold text-[var(--muted-foreground)] transition-all hover:bg-zinc-100 hover:text-[var(--foreground)] shadow-xs"
           >
             ↓ MD
           </button>

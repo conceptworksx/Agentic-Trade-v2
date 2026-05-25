@@ -62,43 +62,37 @@ CONSTRAINTS:
   - Use ONLY provided data; do NOT use external knowledge.
   - Prioritize consistency across indices over outliers.
   - Avoid vague statements; always reference trends or percentages.
-  - Keep explanation concise, analytical, and structured.
+  - Keep explanation detailed, comprehensive, analytical, and structured.
   - Analyze whether the National Stock Exchange is following NASDAQ movements or showing independent strength.
+  - "In Sections 1 to 6, you MUST bold all key parameter names, raw metrics, numeric values, percentages, and indicator regimes (e.g. '**S&P 500 Index**', '**10d momentum**', '**+3.5%**', '**Bullish**', '**CONTRACTING**', '**VIX**'). This is critical for visual clarity."
   - "In Section 8 (FINAL RECOMMENDATION), ONLY bold the labels (e.g. '**Verdict**:', '**Conviction Level**:', '**Key Driver**:', '**Primary Risk**:'). The actual values following these labels MUST NOT be bolded (do not wrap values in asterisks, and do not bold the entire line)."
 
 OUTPUT_FORMAT:
   structure:
     - "# MARKET REGIME ANALYSIS REPORT"
     - "## 1. MARKET REGIME"
-    - "- Classification: {{Bullish / Bearish / Neutral}}"
+    - "- **Classification**: {{Bullish / Bearish / Neutral}} - Provide a detailed summary paragraph classifying the current overall global and domestic market regime."
     - "## 2. PARAMETER EVIDENCE"
     - "### US INDICES"
-    - "- S&P 500 Change: __%"
-    - "- Nasdaq Change: __%"
-    - "- Dow Jones Change: __%"
-    - "- VIX Change: __%"
+    - "- **S&P 500 Index (GSPC)**: Provide a comprehensive paragraph detailing the index's 10-day momentum, segmented trend velocity (over the last 30 days), quarterly structural trend health, and relative upside/downside parameters."
+    - "- **NASDAQ Composite Index (IXIC)**: Provide a comprehensive paragraph detailing the index's 10-day momentum, monthly trend segments, quarterly structural trend health, and relative upside/downside parameters."
     - "### INDIAN INDICES"
-    - "- Nifty 50 Change: __%"
-    - "- Sensex Change: __%"
-    - "- Bank Nifty Change: __%"
-    - "- India VIX Change: __%"
-    - "## 3. EXPLANATION"
-    - "### Global-Domestic Correlation"
-    - "- Analysis of US vs India market alignment or divergence"
-    - "### Momentum Profile"
-    - "- Interpretation of trend continuation, reversal, or bounce-back"
-    - "### Volatility State"
-    - "- VIX interpretation based on established volatility rules"
-    - "### Final Reasoning"
-    - "- Justification for the selected market regime classification"
-
+    - "- **Nifty 50 Index (NSEI)**: Provide a comprehensive paragraph detailing the index's 10-day momentum, monthly trend segments, quarterly structural trend health, and relative upside/downside parameters."
+    - "- **Sensex Index (BSESN)**: Provide a comprehensive paragraph detailing the index's 10-day momentum, monthly trend segments, quarterly structural trend health, and relative upside/downside parameters."
+    - "## 3. GLOBAL-DOMESTIC CORRELATION"
+    - "- Provide a detailed analysis of the correlation and alignment between US and Indian indices, explaining whether Indian indices show independent strength or closely follow US market movements."
+    - "## 4. MOMENTUM & TREND PROFILE"
+    - "- Provide a deep-dive momentum and trend analysis. Interpret the trend continuation, reversal, or bounce-back characteristics of both US and Indian markets using monthly and quarterly data."
+    - "## 5. VOLATILITY & RISK SENTIMENT"
+    - "- Provide a detailed interpretation of the Volatility Index (VIX), analyzing risk appetite, volatility trajectory, and its implications on the stability of the global and domestic market environment."
+    - "## 6. MARKET OUTLOOK & TRAJECTORY"
+    - "- Provide a detailed market outlook, highlighting key support/resistance levels, expected market direction/trajectory in the short-to-medium term, and parameters to watch for potential reversals."
     - "## 7. SUMMARY TABLE (MARKET REGIME PARAMETERS)"
     - "| Parameter | Value / Trend | Assessment / Impact |"
     - "|---|---|---|"
-    - "| US Indices | {{Nasdaq, S&P 500}} | {{Bullish / Bearish / Neutral}} |"
-    - "| Indian Indices | {{Nifty 50, Sensex}} | {{Bullish / Bearish / Neutral}} |"
-    - "| Volatility Index | {{VIX, India VIX}} | {{High / Low / Stable}} |"
-
+    - "| US Indices (Nasdaq, S&P 500) | ... | {{Bullish / Bearish / Neutral}} |"
+    - "| Indian Indices (Nifty 50, Sensex) | ... | {{Bullish / Bearish / Neutral}} |"
+    - "| Volatility Index (VIX) | ... | {{High / Low / Stable}} |"
     - "## 8. FINAL RECOMMENDATION"
     - "- **Verdict**: {{BULLISH / BEARISH / NEUTRAL}}"
     - "- **Conviction Level**: {{High / Medium / Low}}"

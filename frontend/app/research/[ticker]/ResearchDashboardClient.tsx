@@ -57,9 +57,9 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
           <p className="mt-3 text-[14px] text-[var(--foreground)]">{error}</p>
           <button
             onClick={() => router.push("/")}
-            className="mt-6 h-10 border border-[var(--border)] bg-white px-4 font-mono text-[12px] hover:border-[var(--foreground)] rounded-lg shadow-sm"
+            className="mt-6 h-10 border border-[var(--border)] bg-white px-4 font-mono text-[12px] hover:border-[var(--foreground)] rounded-lg shadow-sm transition-all hover:bg-zinc-50"
           >
-            ← New Search
+            ← New Analysis
           </button>
         </div>
       </div>
@@ -82,12 +82,11 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
           {data.ticker.split(".")[0].toUpperCase()}.NS · NSE
         </div>
         <div className="flex items-center gap-4">
-          <VerdictBadge decision={verdict} />
           <Link
             href="/"
-            className="font-mono text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)]"
+            className="font-mono text-[12px] text-[var(--muted-foreground)] hover:text-[var(--foreground)] transition-colors"
           >
-            ← New Search
+            ← New Analysis
           </Link>
         </div>
       </header>
