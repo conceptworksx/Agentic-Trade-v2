@@ -2,7 +2,7 @@
 
 from fastapi import FastAPI, HTTPException, Request, Header
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel,field_validator
+from pydantic import BaseModel, field_validator
 import uvicorn
 from contextlib import asynccontextmanager
 from slowapi import Limiter, _rate_limit_exceeded_handler
@@ -16,11 +16,13 @@ from api.validators import (
 )
 from graph.builder import build_graph
 import asyncio
+import time
 
 from core.logging import setup_logging, get_logger
 
 setup_logging()
 logger = get_logger(__name__)
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -87,23 +89,25 @@ def health_check():
 
 @app.post("/analyze", response_model=AnalyzeResponse)
 @limiter.limit("3/minute")
-async def analyze(request: Request, body: AnalyzeRequest, groq_api_key: str = Header(..., alias="Groq-API-Key")):
-    
+async def analyze(
+    request: Request,
+    body: AnalyzeRequest,
+    groq_api_key: str = Header(..., alias="Groq-API-Key"),
+):
     logger.info("Testing key scrubber: gsk_1234567890abcdefghijklmnopqrstuvwxyz")
     ticker = body.ticker.strip().upper()
     logger.info(f"Analyze request received | ticker={ticker}")
-    
+
     is_valid_key, key_error = validate_api_keys(groq_api_key=groq_api_key)
 
     # validate key format
     if not is_valid_key:
         raise HTTPException(
-            status_code=422,
-            detail={"error": "invalid_api_key", "message": key_error}
+            status_code=422, detail={"error": "invalid_api_key", "message": key_error}
         )
-    
+
     is_valid_format, format_error = validate_ticker_format(ticker)
-    
+
     # validate ticker format
     if not is_valid_format:
         logger.warning(f"Invalid ticker format received | ticker={ticker}")
@@ -115,7 +119,6 @@ async def analyze(request: Request, body: AnalyzeRequest, groq_api_key: str = He
                 "hint": ("Use NSE format like 'RELIANCE.NS'"),
             },
         )
-
 
     # validate ticker exists
     is_valid_ticker, ticker_error = validate_ticker_exists(ticker)
@@ -130,7 +133,7 @@ async def analyze(request: Request, body: AnalyzeRequest, groq_api_key: str = He
             },
         )
 
-    # Run LangGraph workflow 
+    # Run LangGraph workflow
     try:
         logger.info(f"Starting graph execution | ticker={ticker}")
         # Graph built per request
@@ -139,7 +142,6 @@ async def analyze(request: Request, body: AnalyzeRequest, groq_api_key: str = He
             graph.invoke, {"ticker_of_company": ticker}
         )
         logger.info(f"Graph execution completed | ticker={ticker}")
-
         return AnalyzeResponse(
             ticker=ticker,
             news_report=final_state.get("news_analyst_report", ""),
