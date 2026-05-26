@@ -66,6 +66,7 @@ env/
 
 backend/.venv/
 backend/venv/
+backend/main.py
 
 # Python Tooling Cache
 .mypy_cache/
