@@ -79,6 +79,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0s;
 }
+
 .candle:nth-child(2) {
   --b: 26.04%;
   --h: 2.37%;
@@ -87,6 +88,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.065s;
 }
+
 .candle:nth-child(3) {
   --b: 28.64%;
   --h: 4.5%;
@@ -95,6 +97,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.13s;
 }
+
 .candle:nth-child(4) {
   --b: 31.42%;
   --h: 3.43%;
@@ -103,6 +106,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.195s;
 }
+
 .candle:nth-child(5) {
   --b: 31.42%;
   --h: 15.44%;
@@ -111,6 +115,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.26s;
 }
+
 .candle:nth-child(6) {
   --b: 46.54%;
   --h: 0.28%;
@@ -119,6 +124,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.325s;
 }
+
 .candle:nth-child(7) {
   --b: 35.86%;
   --h: 8.7%;
@@ -127,6 +133,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.39s;
 }
+
 .candle:nth-child(8) {
   --b: 11.67%;
   --h: 24.19%;
@@ -135,6 +142,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.455s;
 }
+
 .candle:nth-child(9) {
   --b: 11.83%;
   --h: 15.1%;
@@ -143,6 +151,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.52s;
 }
+
 .candle:nth-child(10) {
   --b: 27.81%;
   --h: 12.04%;
@@ -151,6 +160,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.585s;
 }
+
 .candle:nth-child(11) {
   --b: 39.85%;
   --h: 28.25%;
@@ -159,6 +169,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.65s;
 }
+
 .candle:nth-child(12) {
   --b: 70.8%;
   --h: 6.27%;
@@ -167,6 +178,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.715s;
 }
+
 .candle:nth-child(13) {
   --b: 75.8%;
   --h: 2.71%;
@@ -175,6 +187,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.78s;
 }
+
 .candle:nth-child(14) {
   --b: 67.23%;
   --h: 8.71%;
@@ -183,6 +196,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.845s;
 }
+
 .candle:nth-child(15) {
   --b: 67.81%;
   --h: 7.85%;
@@ -191,6 +205,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 0.91s;
 }
+
 .candle:nth-child(16) {
   --b: 70.08%;
   --h: 6.14%;
@@ -199,6 +214,7 @@ body {
   --candle-color: var(--sell);
   animation-delay: 0.975s;
 }
+
 .candle:nth-child(17) {
   --b: 66.39%;
   --h: 3.69%;
@@ -207,6 +223,7 @@ body {
   --candle-color: var(--buy);
   animation-delay: 1.04s;
 }
+
 .candle:nth-child(18) {
   --b: 64.8%;
   --h: 9.78%;
@@ -221,18 +238,22 @@ body {
     opacity: 0;
     transform: scaleY(0);
   }
+
   10% {
     opacity: 1;
     transform: scaleY(1.5);
   }
+
   50% {
     opacity: 1;
     transform: scaleY(1.35);
   }
+
   70% {
     opacity: 0;
     transform: scaleY(1.5);
   }
+
   100% {
     opacity: 0;
     transform: scaleY(0);
@@ -247,7 +268,10 @@ body {
 }
 
 /* Headings spacing and color */
-.prose h1, .prose h2, .prose h3, .prose h4 {
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
   color: #000000;
   font-family: var(--font-mono), monospace;
   font-weight: 600;
@@ -277,7 +301,8 @@ body {
   font-size: 0.975rem;
 }
 
-.prose ul, .prose ol {
+.prose ul,
+.prose ol {
   margin-top: 0;
   margin-bottom: 1.35rem;
   padding-left: 1.5rem;
@@ -304,7 +329,8 @@ body {
   margin-bottom: 1.75rem;
   font-size: 0.925rem;
   border: 1px solid var(--border);
-  border-radius: 8px; /* Rounded corners for tables */
+  border-radius: 8px;
+  /* Rounded corners for tables */
   overflow: hidden;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
 }
@@ -361,7 +387,8 @@ body {
   font-family: var(--font-mono), monospace;
 }
 
-.prose code::before, .prose code::after {
+.prose code::before,
+.prose code::after {
   content: none !important;
 }
 
@@ -376,4 +403,113 @@ body {
   color: #3f3f46 !important;
 }
 
+.debate {
+  width: 240px;
+  height: 80px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 20px;
+}
 
+/* robots */
+.robot {
+  color: var(--muted-foreground);
+  font-size: 36px;
+  opacity: 0.5;
+  animation: talk 2s infinite;
+}
+
+.right {
+  animation-delay: 1s;
+}
+
+@keyframes talk {
+
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+
+  30% {
+    transform: scale(1.12);
+    opacity: 0.8;
+    filter: drop-shadow(0 0 6px rgba(0, 0, 0, 0.05));
+  }
+}
+
+/* messages */
+.message {
+  position: absolute;
+  left: 60px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--muted-foreground);
+  font-size: 18px;
+  opacity: 0;
+}
+
+/* message animations */
+.m1 {
+  animation: sendRight 2.4s infinite;
+}
+
+.m2 {
+  animation: sendLeft 2.4s infinite 0.6s;
+}
+
+.m3 {
+  animation: sendRight 2.4s infinite 1.2s;
+}
+
+.m4 {
+  animation: sendLeft 2.4s infinite 1.8s;
+}
+
+@keyframes sendRight {
+  0% {
+    left: 60px;
+    opacity: 0;
+    transform: translateY(-50%) scale(0.6);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  80% {
+    left: 160px;
+    opacity: 1;
+  }
+
+  100% {
+    left: 180px;
+    opacity: 0;
+    transform: translateY(-50%) scale(0.2);
+  }
+}
+
+@keyframes sendLeft {
+  0% {
+    left: 160px;
+    opacity: 0;
+    transform: translateY(-50%) scale(0.6);
+  }
+
+  15% {
+    opacity: 1;
+  }
+
+  80% {
+    left: 60px;
+    opacity: 1;
+  }
+
+  100% {
+    left: 40px;
+    opacity: 0;
+    transform: translateY(-50%) scale(0.2);
+  }
+}
