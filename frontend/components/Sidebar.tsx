@@ -4,13 +4,10 @@ import {
   BarChart2,
   Globe,
   Layers,
-  TrendingUp,
-  TrendingDown,
-  Gavel,
   type LucideIcon,
 } from "lucide-react";
 import type { Decision } from "@/lib/api";
-import { decisionColor } from "./VerdictBadge";
+// import { decisionColor } from "./VerdictBadge";
 
 export type ViewKey =
   | "news"
@@ -37,20 +34,18 @@ const ANALYSTS: Item[] = [
   { key: "sector", label: "Sector Analyst", icon: Layers },
 ];
 
-const DEBATE: Item[] = [
-  { key: "bull", label: "Bull Analyst", icon: TrendingUp, accent: "BUY" },
-  { key: "bear", label: "Bear Analyst", icon: TrendingDown, accent: "SELL" },
-  { key: "manager", label: "Manager Decision", icon: Gavel },
-];
+// const DEBATE: Item[] = [
+//   { key: "bull", label: "Bull Analyst", icon: TrendingUp, accent: "BUY" },
+//   { key: "bear", label: "Bear Analyst", icon: TrendingDown, accent: "SELL" },
+//   { key: "manager", label: "Manager Decision", icon: Gavel },
+// ];
 
 export function Sidebar({
   active,
   onSelect,
-  verdict,
 }: {
   active: ViewKey;
   onSelect: (k: ViewKey) => void;
-  verdict: Decision;
 }) {
   return (
     <aside className="flex w-60 shrink-0 flex-col overflow-y-auto border-r border-[var(--border)] bg-white">
@@ -96,9 +91,9 @@ function SectionLabel({ children }: { children: React.ReactNode }) {
   );
 }
 
-function Divider() {
-  return <div className="mx-4 my-1 h-px bg-[var(--border)]" />;
-}
+// function Divider() {
+//   return <div className="mx-4 my-1 h-px bg-[var(--border)]" />;
+// }
 
 function Row({
   item,
@@ -116,13 +111,12 @@ function Row({
   return (
     <button
       onClick={() => onSelect(item.key)}
-      className={`flex h-10 items-center gap-3 px-3 mx-2 text-left text-[14px] font-medium transition-all rounded-lg ${
-        active
-          ? useAccent
-            ? "text-white"
-            : "bg-[var(--foreground)] text-white"
-          : "text-[var(--muted-foreground)] hover:bg-zinc-50 hover:text-[var(--foreground)]"
-      }`}
+      className={`flex h-10 items-center gap-3 px-3 mx-2 text-left text-[14px] font-medium transition-all rounded-lg ${active
+        ? useAccent
+          ? "text-white"
+          : "bg-[var(--foreground)] text-white"
+        : "text-[var(--muted-foreground)] hover:bg-zinc-50 hover:text-[var(--foreground)]"
+        }`}
       style={useAccent ? { background: accent } : undefined}
     >
       <Icon size={16} />
