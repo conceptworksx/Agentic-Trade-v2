@@ -4,9 +4,6 @@ import {
   BarChart2,
   Globe,
   Layers,
-  TrendingUp,
-  TrendingDown,
-  Gavel,
   type LucideIcon,
 } from "lucide-react";
 import type { Decision } from "@/lib/api";
