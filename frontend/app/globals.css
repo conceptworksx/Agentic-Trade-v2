@@ -1,0 +1,379 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+:root {
+  --background: #ffffff;
+  --foreground: #000000;
+  --border: #e4e4e7;
+  --muted-foreground: #71717a;
+  --label: #71717a;
+  --buy: #22c55e;
+  --sell: #ef4444;
+  --hold: #eab308;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-active-sans);
+  --font-mono: var(--font-active-mono);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+/* Candlestick Animation Overlay */
+.candle-wrapper {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+  background: transparent;
+}
+
+.candle-chart {
+  display: flex;
+  align-items: flex-end;
+  height: 80px;
+  gap: 4px;
+}
+
+.candle {
+  width: 6px;
+  height: 110%;
+  position: relative;
+  animation: fade 2.6s infinite ease-in-out;
+  filter: drop-shadow(0 0 1px rgba(0, 0, 0, 0.15));
+}
+
+.candle::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  width: 100%;
+  background: var(--candle-color, #000000);
+  border: 1px solid var(--candle-color, #000000);
+  bottom: var(--b);
+  height: var(--h);
+}
+
+.candle::before {
+  content: "";
+  position: absolute;
+  left: 63%;
+  transform: translateX(-50%);
+  width: 1px;
+  background: var(--candle-color, #000000);
+  bottom: var(--wb);
+  height: var(--wh);
+}
+
+.candle:nth-child(1) {
+  --b: 7.1%;
+  --h: 18.93%;
+  --wb: 0%;
+  --wh: 31.95%;
+  --candle-color: var(--buy);
+  animation-delay: 0s;
+}
+.candle:nth-child(2) {
+  --b: 26.04%;
+  --h: 2.37%;
+  --wb: 19.41%;
+  --wh: 14.91%;
+  --candle-color: var(--sell);
+  animation-delay: 0.065s;
+}
+.candle:nth-child(3) {
+  --b: 28.64%;
+  --h: 4.5%;
+  --wb: 16.92%;
+  --wh: 21.66%;
+  --candle-color: var(--buy);
+  animation-delay: 0.13s;
+}
+.candle:nth-child(4) {
+  --b: 31.42%;
+  --h: 3.43%;
+  --wb: 19.76%;
+  --wh: 27.93%;
+  --candle-color: var(--buy);
+  animation-delay: 0.195s;
+}
+.candle:nth-child(5) {
+  --b: 31.42%;
+  --h: 15.44%;
+  --wb: 27.43%;
+  --wh: 28.07%;
+  --candle-color: var(--sell);
+  animation-delay: 0.26s;
+}
+.candle:nth-child(6) {
+  --b: 46.54%;
+  --h: 0.28%;
+  --wb: 43.43%;
+  --wh: 24.38%;
+  --candle-color: var(--buy);
+  animation-delay: 0.325s;
+}
+.candle:nth-child(7) {
+  --b: 35.86%;
+  --h: 8.7%;
+  --wb: 29.7%;
+  --wh: 24.5%;
+  --candle-color: var(--sell);
+  animation-delay: 0.39s;
+}
+.candle:nth-child(8) {
+  --b: 11.67%;
+  --h: 24.19%;
+  --wb: 5.33%;
+  --wh: 31.83%;
+  --candle-color: var(--sell);
+  animation-delay: 0.455s;
+}
+.candle:nth-child(9) {
+  --b: 11.83%;
+  --h: 15.1%;
+  --wb: 7.93%;
+  --wh: 24.97%;
+  --candle-color: var(--buy);
+  animation-delay: 0.52s;
+}
+.candle:nth-child(10) {
+  --b: 27.81%;
+  --h: 12.04%;
+  --wb: 27.69%;
+  --wh: 28.17%;
+  --candle-color: var(--buy);
+  animation-delay: 0.585s;
+}
+.candle:nth-child(11) {
+  --b: 39.85%;
+  --h: 28.25%;
+  --wb: 39.53%;
+  --wh: 28.58%;
+  --candle-color: var(--buy);
+  animation-delay: 0.65s;
+}
+.candle:nth-child(12) {
+  --b: 70.8%;
+  --h: 6.27%;
+  --wb: 60.96%;
+  --wh: 24.84%;
+  --candle-color: var(--sell);
+  animation-delay: 0.715s;
+}
+.candle:nth-child(13) {
+  --b: 75.8%;
+  --h: 2.71%;
+  --wb: 68.38%;
+  --wh: 31.62%;
+  --candle-color: var(--sell);
+  animation-delay: 0.78s;
+}
+.candle:nth-child(14) {
+  --b: 67.23%;
+  --h: 8.71%;
+  --wb: 64.8%;
+  --wh: 24.97%;
+  --candle-color: var(--buy);
+  animation-delay: 0.845s;
+}
+.candle:nth-child(15) {
+  --b: 67.81%;
+  --h: 7.85%;
+  --wb: 57.54%;
+  --wh: 27.55%;
+  --candle-color: var(--buy);
+  animation-delay: 0.91s;
+}
+.candle:nth-child(16) {
+  --b: 70.08%;
+  --h: 6.14%;
+  --wb: 55.68%;
+  --wh: 21.83%;
+  --candle-color: var(--sell);
+  animation-delay: 0.975s;
+}
+.candle:nth-child(17) {
+  --b: 66.39%;
+  --h: 3.69%;
+  --wb: 58.11%;
+  --wh: 26.11%;
+  --candle-color: var(--buy);
+  animation-delay: 1.04s;
+}
+.candle:nth-child(18) {
+  --b: 64.8%;
+  --h: 9.78%;
+  --wb: 45.47%;
+  --wh: 29.61%;
+  --candle-color: var(--sell);
+  animation-delay: 1.105s;
+}
+
+@keyframes fade {
+  0% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+  10% {
+    opacity: 1;
+    transform: scaleY(1.5);
+  }
+  50% {
+    opacity: 1;
+    transform: scaleY(1.35);
+  }
+  70% {
+    opacity: 0;
+    transform: scaleY(1.5);
+  }
+  100% {
+    opacity: 0;
+    transform: scaleY(0);
+  }
+}
+
+/* Premium Typography & Prose Customizations */
+.prose {
+  font-family: var(--font-sans), sans-serif;
+  color: #1c1917;
+  line-height: 1.68;
+}
+
+/* Headings spacing and color */
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: #000000;
+  font-family: var(--font-mono), monospace;
+  font-weight: 600;
+  margin-top: 1.85em;
+  margin-bottom: 0.8em;
+  letter-spacing: -0.015em;
+}
+
+.prose h1 {
+  font-size: 1.625rem;
+}
+
+.prose h2 {
+  font-size: 1.3rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.375rem;
+}
+
+.prose h3 {
+  font-size: 1.15rem;
+}
+
+.prose p {
+  margin-top: 0;
+  margin-bottom: 1.35rem;
+  color: #1c1917;
+  font-size: 0.975rem;
+}
+
+.prose ul, .prose ol {
+  margin-top: 0;
+  margin-bottom: 1.35rem;
+  padding-left: 1.5rem;
+}
+
+.prose li {
+  margin-top: 0.4rem;
+  margin-bottom: 0.4rem;
+  color: #1c1917;
+  font-size: 0.975rem;
+}
+
+.prose strong {
+  color: #000000;
+  font-weight: 600;
+}
+
+/* Premium Elegant Tables */
+.prose table {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 0;
+  margin-top: 1.75rem;
+  margin-bottom: 1.75rem;
+  font-size: 0.925rem;
+  border: 1px solid var(--border);
+  border-radius: 8px; /* Rounded corners for tables */
+  overflow: hidden;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.02);
+}
+
+.prose th {
+  background-color: #f9fafb !important;
+  color: #111827 !important;
+  font-weight: 600 !important;
+  text-align: left;
+  padding: 12px 14px !important;
+  border-bottom: 1px solid var(--border) !important;
+  font-family: var(--font-mono), monospace;
+  font-size: 0.8rem !important;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  white-space: nowrap !important;
+}
+
+.prose td {
+  padding: 12px 14px !important;
+  border-bottom: 1px solid var(--border) !important;
+  color: #374151 !important;
+  background-color: #ffffff !important;
+  transition: background-color 0.15s ease;
+}
+
+/* Prevent wrapping on first-column cells (e.g. Dates, Metrics) */
+.prose td:first-child {
+  white-space: nowrap !important;
+}
+
+/* Zebra striping for table rows */
+.prose tr:nth-child(even) td {
+  background-color: #fcfcfd !important;
+}
+
+/* Hover effect on table rows */
+.prose tr:hover td {
+  background-color: #f3f4f6 !important;
+}
+
+/* Remove bottom border from the last row */
+.prose tr:last-child td {
+  border-bottom: none !important;
+}
+
+/* Code block styles */
+.prose code {
+  background-color: #f4f4f5 !important;
+  color: #000000 !important;
+  padding: 0.2rem 0.4rem !important;
+  border-radius: 4px;
+  font-size: 0.8rem !important;
+  font-family: var(--font-mono), monospace;
+}
+
+.prose code::before, .prose code::after {
+  content: none !important;
+}
+
+/* Links */
+.prose a {
+  color: #000000 !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose a:hover {
+  color: #3f3f46 !important;
+}
+
+

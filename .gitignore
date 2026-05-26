@@ -1,0 +1,163 @@
+# ==============================================================================
+# Gitignore for Agentic-Trade
+# ==============================================================================
+
+# ==============================================================================
+# System & OS Specific Files
+# ==============================================================================
+
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ==============================================================================
+# IDEs and Editors
+# ==============================================================================
+
+.idea/
+.vscode/
+
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.swp
+*.swo
+*~
+
+# ==============================================================================
+# Python & Virtual Environments
+# ==============================================================================
+
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Build / Distribution
+build/
+dist/
+develop-eggs/
+downloads/
+eggs/
+.eggs/
+parts/
+sdist/
+var/
+wheels/
+share/python-wheels/
+
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+
+backend/.venv/
+backend/venv/
+backend/main.py
+
+# Python Tooling Cache
+.mypy_cache/
+.pytest_cache/
+.ruff_cache/
+.pyre/
+.hypothesis/
+.tox/
+.nox/
+
+.ipynb_checkpoints/
+
+# ==============================================================================
+# Frontend (Node / React / Next / Vite)
+# ==============================================================================
+
+node_modules/
+frontend/node_modules/
+
+# Next.js
+frontend/.next/
+frontend/out/
+
+# React / Vite / Generic Builds
+frontend/build/
+frontend/dist/
+
+# Deployment Platforms
+frontend/.vercel/
+frontend/.wrangler/
+
+# TypeScript
+*.tsbuildinfo
+frontend/next-env.d.ts
+
+# ==============================================================================
+# Environment & Secret Files
+# ==============================================================================
+
+# NEVER commit secrets or active API keys
+
+.env
+.env.local
+.env.*.local
+
+backend/.env
+backend/.env.local
+backend/.env.*.local
+
+frontend/.env
+frontend/.env.local
+frontend/.env.*.local
+
+# ==============================================================================
+# Logs & Runtime Files
+# ==============================================================================
+
+*.log
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+backend/logs/
+backend/pdfs/
+
+# ==============================================================================
+# Deployment / Runtime
+# ==============================================================================
+
+*.pid
+*.seed
+*.pid.lock
+
+# ==============================================================================
+# Coverage / Testing
+# ==============================================================================
+
+.coverage
+.coverage.*
+htmlcov/
+
+coverage/
+frontend/coverage/
+
+# ==============================================================================
+# Misc
+# ==============================================================================
+
+.cache/
+temp/
+tmp/
