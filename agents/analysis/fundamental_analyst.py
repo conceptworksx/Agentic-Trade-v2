@@ -97,3 +97,18 @@ class FundamentalAnalyst(BaseAgent):
                 ),
             }
         )
+
+    def stream(self, state):
+        """Stream the Fundamental Analyst chain output."""
+
+        logger.info(
+            f"Streaming fundamental analyst pipeline | ticker={state['ticker_of_company']}"
+        )
+        yield from self.chain.stream(
+            {
+                "ticker": state["ticker_of_company"],
+                "fundamental_data": state.get("data_bundle", {}).get(
+                    "fundamental_data"
+                ),
+            }
+        )

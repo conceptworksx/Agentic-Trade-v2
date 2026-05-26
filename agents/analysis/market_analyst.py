@@ -94,3 +94,16 @@ class MarketAnalyst(BaseAgent):
                 "market_data": state.get("data_bundle", {}).get("market_data"),
             }
         )
+
+    def stream(self, state):
+        """Stream the Market Analyst chain output."""
+
+        logger.info(
+            f"Streaming market analyst pipeline | ticker={state['ticker_of_company']}"
+        )
+        yield from self.chain.stream(
+            {
+                "ticker": state["ticker_of_company"],
+                "market_data": state.get("data_bundle", {}).get("market_data"),
+            }
+        )

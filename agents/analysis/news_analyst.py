@@ -71,3 +71,16 @@ class NewsAnalyst(BaseAgent):
                 "company_news": state.get("data_bundle", {}).get("news_data"),
             }
         )
+
+    def stream(self, state):
+        """Stream the News Analyst chain output."""
+
+        logger.info(
+            f"Streaming news analyst pipeline | ticker={state['ticker_of_company']}"
+        )
+        yield from self.chain.stream(
+            {
+                "ticker": state["ticker_of_company"],
+                "company_news": state.get("data_bundle", {}).get("news_data"),
+            }
+        )

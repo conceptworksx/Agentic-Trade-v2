@@ -93,3 +93,16 @@ class TechnicalAnalyst(BaseAgent):
                 "technical_data": state.get("data_bundle", {}).get("technical_data"),
             }
         )
+
+    def stream(self, state):
+        """Stream the Technical Analyst chain output."""
+
+        logger.info(
+            f"Streaming technical analyst pipeline | ticker={state['ticker_of_company']}"
+        )
+        yield from self.chain.stream(
+            {
+                "ticker": state["ticker_of_company"],
+                "technical_data": state.get("data_bundle", {}).get("technical_data"),
+            }
+        )

@@ -25,6 +25,7 @@ def get_llm(api_key: str = None):
         model=GROQ_MODEL,
         api_key=api_key or os.getenv("GROQ_API_KEY"),
         temperature=0.3,
+        streaming=True,
     )
 
 

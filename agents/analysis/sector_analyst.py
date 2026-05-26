@@ -150,3 +150,16 @@ class SectorAnalyst(BaseAgent):
                 "sector_data": state.get("data_bundle", {}).get("sector_data"),
             }
         )
+
+    def stream(self, state):
+        """Stream the Sector Analyst chain output."""
+
+        logger.info(
+            f"Streaming sector analyst pipeline | ticker={state['ticker_of_company']}"
+        )
+        yield from self.chain.stream(
+            {
+                "ticker": state["ticker_of_company"],
+                "sector_data": state.get("data_bundle", {}).get("sector_data"),
+            }
+        )
