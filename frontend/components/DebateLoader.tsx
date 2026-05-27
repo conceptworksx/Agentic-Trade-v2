@@ -7,8 +7,6 @@ import {
 
 import { RiRobot3Line } from "react-icons/ri";
 
-import "./debateLoader.css";
-
 export default function DebateLoader() {
   const icons = [
     <TbMessageCircleCheck key="check" />,

@@ -68,7 +68,6 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
 
   if (!data) return <LoadingScreen ticker={ticker} />;
 
-  const verdict = data.research_verdict.decision;
   const isError = data.status && data.status !== "success";
 
   return (
@@ -92,7 +91,7 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
       </header>
 
       <div className="flex min-h-0 flex-1">
-        <Sidebar active={view} onSelect={setView} verdict={verdict} />
+        <Sidebar active={view} onSelect={setView} />
 
         <main className="flex-1 overflow-y-auto bg-[var(--background)] p-8">
           {isError ? (
