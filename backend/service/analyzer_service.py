@@ -1,3 +1,4 @@
+import re
 from concurrent.futures import ThreadPoolExecutor
 from queue import Queue
 from typing import Any
@@ -15,6 +16,24 @@ from api.models import REPORT_FIELDS
 from api.utils import ndjson, paragraph_chunks
 
 logger = get_logger(__name__)
+
+ERROR_PATTERNS = [
+    (re.compile(r"rate.?limit|429|too many requests|quota", re.IGNORECASE), "API rate limit reached. The Groq free tier allows a limited number of requests per minute. Please wait a minute and try again."),
+    (re.compile(r"401|unauthorized|invalid.*key|authentication", re.IGNORECASE), "Invalid API key. Please check your Groq API key on the home page and try again."),
+    (re.compile(r"403|forbidden", re.IGNORECASE), "Access denied. Your API key may not have the required permissions."),
+    (re.compile(r"timeout|timed?\s*out|deadline", re.IGNORECASE), "The request timed out. The analysis server may be under heavy load — please try again shortly."),
+    (re.compile(r"network|fetch|ECONNREFUSED|ENOTFOUND|connection.*refused", re.IGNORECASE), "Unable to connect to the analysis server. Please ensure the backend is running and try again."),
+    (re.compile(r"500|internal server", re.IGNORECASE), "The analysis server encountered an internal error. Please try again later."),
+    (re.compile(r"503|service unavailable", re.IGNORECASE), "The analysis service is temporarily unavailable. Please try again in a few moments."),
+]
+
+def get_friendly_error_message(exc: Exception) -> str:
+    raw = str(exc)
+    for pattern, friendly in ERROR_PATTERNS:
+        if pattern.search(raw):
+            return friendly
+    return raw
+
 
 
 def build_charts_data(data_bundle: dict) -> dict:
@@ -79,7 +98,7 @@ def stream_analyze_events(ticker: str, groq_api_key: str):
                     {
                         "type": "report_error",
                         "report": report,
-                        "message": str(exc),
+                        "message": get_friendly_error_message(exc),
                     }
                 )
 
@@ -118,6 +137,6 @@ def stream_analyze_events(ticker: str, groq_api_key: str):
             {
                 "type": "error",
                 "ticker": ticker,
-                "message": str(exc),
+                "message": get_friendly_error_message(exc),
             }
         )
