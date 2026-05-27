@@ -88,7 +88,6 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
 
   if (!data) return <LoadingScreen ticker={ticker} />;
 
-  const verdict = data.research_verdict.decision;
   const isError = data.status && !["success", "streaming"].includes(data.status);
 
   return (

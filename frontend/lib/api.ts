@@ -82,9 +82,9 @@ const DEFAULT_VERDICT = {
 };
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-const STREAM_PARAGRAPH_DELAY_MS = 120;
-const STREAM_WORD_BATCH_SIZE = 4;
-const STREAM_WORD_BATCH_DELAY_MS = 42;
+const STREAM_PARAGRAPH_DELAY_MS = 10;
+const STREAM_WORD_BATCH_SIZE = 16;
+const STREAM_WORD_BATCH_DELAY_MS = 10;
 
 export function normalizeTicker(ticker: string) {
   let cleanTicker = ticker.trim().toUpperCase();
