@@ -161,9 +161,6 @@ async def analyze(
         )
         logger.info(f"Graph execution completed | ticker={ticker}")
 
-        # Extract chart data directly from state
-        charts_data = final_state.get("charts_data")
-
         return AnalyzeResponse(
             ticker=ticker,
             news_report=final_state.get("news_analyst_report", ""),
@@ -171,8 +168,8 @@ async def analyze(
             fundamental_report=final_state.get("fundamental_analyst_report", ""),
             market_report=final_state.get("market_analyst_report", ""),
             sector_report=final_state.get("sector_analyst_report", ""),
+            charts_data=final_state.get("charts_data"),
             status="success",
-            charts_data=charts_data,
         )
 
     except AgentError as e:
