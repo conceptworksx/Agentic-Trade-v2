@@ -8,6 +8,7 @@ from tools.news_tools import (
     get_indian_market_news,
     get_global_market_news,
 )
+from core.error import handle_llm_errors
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -59,6 +60,7 @@ class NewsAnalyst(BaseAgent):
             | StrOutputParser()
         )
 
+    @handle_llm_errors()
     def run(self, state) -> str:
         """Invoke the News Analyst chain with the relevant portion of the state."""
 

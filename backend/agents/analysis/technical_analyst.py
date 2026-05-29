@@ -8,6 +8,7 @@ from langchain_core.runnables import (
 from langchain_core.output_parsers import StrOutputParser
 
 from agents.base_agent import BaseAgent
+from core.error import handle_llm_errors
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -80,6 +81,7 @@ class TechnicalAnalyst(BaseAgent):
             error_chain,
         )
 
+    @handle_llm_errors()
     def run(self, state):
         """Invoke the Technical Analyst chain with the relevant portion of the state."""
 

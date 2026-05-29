@@ -18,17 +18,24 @@ export function LoadingScreen({ ticker }: { ticker: string }) {
   }, []);
 
   return (
-    <div className="flex min-h-screen items-center justify-center px-6">
-      <div className="w-full max-w-[480px] text-center">
-        <h1 className="font-mono text-[13px] tracked">ARTHA ANALYTICS</h1>
+    <div className="flex min-h-screen items-start justify-center px-6 pt-[15vh]">
+      <div className="w-full text-center flex flex-col items-center">
+        {/* Logo */}
+        <div className="mb-1">
+          <img 
+            src="/landing_hero.png" 
+            alt="Artha Analytics Logo" 
+            className="w-52 h-52 object-contain" 
+          />
+        </div>
         <div className="mx-auto my-3 h-px w-full bg-[var(--border)]" />
-        <p className="font-mono text-[13px] text-[var(--muted-foreground)]">
+        <p className="font-mono text-[13px] text-zinc-800 font-medium">
           Initialising agents for {ticker}...
         </p>
-        <div className="mt-6">
+        <div className="mt-6 w-full flex justify-center">
           <DebateLoader />
         </div>
-        <p className="mt-4 font-mono text-[12px] text-[var(--muted-foreground)]">
+        <p className="mt-4 font-mono text-[12px] text-zinc-800 font-medium">
           {STEPS[step]}
         </p>
       </div>

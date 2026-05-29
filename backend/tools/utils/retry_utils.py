@@ -1,5 +1,4 @@
 import time
-import logging
 import functools
 import traceback
 from typing import Any, Callable, TypeVar

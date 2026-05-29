@@ -1,7 +1,7 @@
-import pandas as pd   
+import pandas as pd
 
 
-def _compute_trend_alignment(above_count : int) -> str:
+def _compute_trend_alignment(above_count: int) -> str:
 
     if above_count == 4:
         result = "STRONG_BULL"
@@ -13,10 +13,11 @@ def _compute_trend_alignment(above_count : int) -> str:
         result = "STRONG_BEAR"
     else:
         result = "MIXED"
-    
+
     return result
 
-def _compute_rsi_condition(cur : int) -> str :
+
+def _compute_rsi_condition(cur: int) -> str:
 
     if cur > 70:
         condition = "OVERBOUGHT"
@@ -31,6 +32,7 @@ def _compute_rsi_condition(cur : int) -> str :
 
     return condition
 
+
 def _compute_mfi_condition_signal(mfi_val: int) -> tuple[str, str]:
 
     if mfi_val > 80:
@@ -41,4 +43,3 @@ def _compute_mfi_condition_signal(mfi_val: int) -> tuple[str, str]:
         condition, signal = "NEUTRAL", "HOLD"
 
     return condition, signal
-    

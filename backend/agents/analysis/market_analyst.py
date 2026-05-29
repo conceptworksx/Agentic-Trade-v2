@@ -8,6 +8,7 @@ from langchain_core.runnables import (
 from langchain_core.output_parsers import StrOutputParser
 
 from agents.base_agent import BaseAgent
+from core.error import handle_llm_errors
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -56,7 +57,7 @@ SENSEX:
 class MarketAnalyst(BaseAgent):
 
     prompt_path = "prompts/market_analyst_prompt.yaml"
-    
+
     def __init__(self, groq_api_key: str):
 
         super().__init__(groq_api_key)
@@ -82,6 +83,7 @@ class MarketAnalyst(BaseAgent):
             error_chain,
         )
 
+    @handle_llm_errors()
     def run(self, state) -> str:
         """Invoke the Market Analyst chain with the relevant portion of the state."""
 

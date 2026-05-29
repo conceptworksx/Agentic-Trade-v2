@@ -7,6 +7,7 @@ from langchain_core.runnables import RunnableLambda, RunnableParallel, RunnableB
 
 from agents.base_agent import BaseAgent, load_structured_prompt
 from core.constants import get_sector_catalog
+from core.error import handle_llm_errors
 from core.logging import get_logger
 from tools.sector_tools import (
     fetch_sector_payload,
@@ -110,20 +111,17 @@ class SectorAnalyst(BaseAgent):
 
         # Step 4: Define the Final Report Generation stage
         # Fetches the actual PDF payload and runs the final sector analysis prompt
-        report_generator = (
-            RunnableLambda(fetch_sector_payload)
-            | RunnableBranch(
-                (
-                    lambda x: x["sector_data"]["status"] == "failed",
-                    RunnableLambda(
-                        lambda x: f"Sector analysis aborted: {x['sector_data'].get('error', 'Sector PDF fetch failed')}"
-                    ),
+        report_generator = RunnableLambda(fetch_sector_payload) | RunnableBranch(
+            (
+                lambda x: x["sector_data"]["status"] == "failed",
+                RunnableLambda(
+                    lambda x: f"Sector analysis aborted: {x['sector_data'].get('error', 'Sector PDF fetch failed')}"
                 ),
-                RunnableLambda(_build_sector_report_message)
-                | self.prompt
-                | self.llm
-                | StrOutputParser(),
-            )
+            ),
+            RunnableLambda(_build_sector_report_message)
+            | self.prompt
+            | self.llm
+            | StrOutputParser(),
         )
 
         # Main Pipeline: Fetch -> Resolve -> Analyze
@@ -139,6 +137,7 @@ class SectorAnalyst(BaseAgent):
             sector_resolver | report_generator,
         )
 
+    @handle_llm_errors()
     def run(self, state) -> str:
         """Execute the full sector analysis pipeline for a given ticker."""
         logger.info(

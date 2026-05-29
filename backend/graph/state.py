@@ -33,6 +33,9 @@ class AgentState(TypedDict):
         dict,
         "Pre-fetched data bundle containing all relevant financial and market information.",
     ]
+    charts_data: Annotated[
+        dict, "Time series data for UI charts (bypasses LLM prompt)"
+    ]
     sector_of_company: Annotated[
         str, "The industry vertical the company operates within (e.g., Tech, Energy)."
     ]

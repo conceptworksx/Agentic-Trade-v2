@@ -4,6 +4,7 @@ import threading
 import requests
 import pandas as pd
 from io import StringIO
+from langchain_groq import ChatGroq
 from core.logging import get_logger
 
 logger = get_logger(__name__)
@@ -150,15 +151,21 @@ def validate_ticker_exists(
 
     return True, None
 
+
 def validate_api_keys(groq_api_key: str) -> tuple[bool, str]:
     if not groq_api_key or not groq_api_key.strip():
         return False, "Groq API key is required."
-
-    if not groq_api_key.startswith("gsk_"):
-        return False, (
-            "Invalid Groq API key format. "
-            "Groq keys start with 'gsk_'. "
-            "Get yours at console.groq.com"
+    try:
+        llm = ChatGroq(
+            api_key=groq_api_key,
+            model="llama-3.1-8b-instant",
+            temperature=0,
         )
 
-    return True, ""
+        # tiny validation request
+        llm.invoke("ping")
+
+        return True, None
+
+    except Exception:
+        return False, "Invalid Groq API key"

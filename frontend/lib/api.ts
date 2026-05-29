@@ -1,5 +1,3 @@
-export type Decision = "BUY" | "SELL" | "HOLD";
-
 export interface AnalyseResponse {
   ticker: string;
   news_report: string;
@@ -7,48 +5,142 @@ export interface AnalyseResponse {
   fundamental_report: string;
   market_report: string;
   sector_report: string;
-  investment_debate: {
-    bull_thesis: string;
-    bear_thesis: string;
-    speaker_history: string[];
-    last_speaker: string;
-    final_decision: { decision: Decision; rationale: string };
-  };
-  research_verdict: { decision: Decision; rationale: string };
   status: string;
+  charts_data?: {
+    technical_history: Array<{
+      date: string;
+      close: number | null;
+      ma50: number | null;
+      ma200: number | null;
+      bb_upper: number | null;
+      bb_lower: number | null;
+      bb_mid: number | null;
+      rsi: number | null;
+      volume: number | null;
+    }>;
+    financials_history: {
+      income_stmt: {
+        revenue?: Record<string, number | null>;
+        ebitda?: Record<string, number | null>;
+        net_income?: Record<string, number | null>;
+        eps_diluted?: Record<string, number | null>;
+      };
+      balance_sheet: {
+        cash?: Record<string, number | null>;
+        total_liabilities?: Record<string, number | null>;
+        total_debt?: Record<string, number | null>;
+        shareholders_equity?: Record<string, number | null>;
+      };
+      cash_flow: {
+        operating_cash_flow?: Record<string, number | null>;
+        free_cash_flow?: Record<string, number | null>;
+      };
+      ratios: {
+        net_margin_pct?: Record<string, number | null>;
+        roe_pct?: Record<string, number | null>;
+        roce_pct?: Record<string, number | null>;
+        debt_to_equity?: Record<string, number | null>;
+        interest_coverage?: Record<string, number | null>;
+      };
+    };
+  };
 }
 
-const DEFAULT_DEBATE = {
-  bull_thesis: `### Bull Analyst Thesis
+const API_BASE_URL = "http://localhost:8000";
 
-* **Market Leadership**: The company is a key player in its industry, holding dominant market share and high brand equity.
-* **Favorable Tailwinds**: Expanding market demand and new policy initiatives provide a clear pathway for volume growth.
-* **Financial Resilience**: High operating cash flow and a healthy debt-to-equity ratio provide buffer for future reinvestment.`,
-  bear_thesis: `### Bear Analyst Thesis
-
-* **Valuation Premium**: The stock is currently trading at a premium relative to its historical multiples and sector peers.
-* **Inflationary Pressures**: Elevated input prices and rising labor costs may compress short-term operating margins.
-* **Macro Headwinds**: Global rate cycles and economic uncertainty pose structural risks to near-term demand growth.`,
-  speaker_history: ["bull", "bear", "manager"],
-  last_speaker: "manager",
-  final_decision: {
-    decision: "HOLD" as Decision,
-    rationale: "The debate highlights a solid business model facing elevated near-term valuation and margin risks. A balanced approach is recommended."
-  }
-};
-
-const DEFAULT_VERDICT = {
-  decision: "HOLD" as Decision,
-  rationale: "The consensus recommendation is HOLD. While the long-term fundamentals and market position remain strong, near-term headwinds and valuation metrics suggest waiting for a more favorable entry price."
-};
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
-
-export async function analyseTicker(ticker: string, groqApiKey: string): Promise<AnalyseResponse> {
+export function normalizeTicker(ticker: string) {
   let cleanTicker = ticker.trim().toUpperCase();
   if (!cleanTicker.endsWith(".NS")) {
     cleanTicker = `${cleanTicker}.NS`;
   }
+  return cleanTicker;
+}
+
+// ── Error handling ─────────────────────────────────────────────────────────────
+
+interface BackendErrorDetail {
+  error?: string;
+  message?: string;
+}
+
+export class AnalysisError extends Error {
+  title: string;
+
+  constructor({ title, message }: { title: string; message: string }) {
+    super(message);
+    this.name = "AnalysisError";
+    this.title = title;
+  }
+}
+
+/**
+ * Map backend structured error responses to user-friendly messages.
+ *
+ * Backend error codes:
+ *   401 → { error: "invalid_api_key" }
+ *   429 → { error: "app_rate_limit" } or { error: "llm_rate_limit" }
+ *   404 → { error: "ticker_not_found" }
+ *   Everything else → 500 internal server error
+ */
+function buildErrorMessage(status: number, detail: BackendErrorDetail): { title: string; message: string } {
+  const errorCode = detail?.error ?? "";
+  const serverMsg = detail?.message ?? "";
+
+  // 401 — Invalid API key
+  if (status === 401 || errorCode === "invalid_api_key") {
+    return {
+      title: "INVALID API KEY",
+      message: "We couldn't authenticate your request. The Groq API key provided appears to be invalid, expired, or improperly formatted.",
+    };
+  }
+
+  // 429 — Rate limits
+  if (status === 429) {
+    if (errorCode === "app_rate_limit") {
+      return {
+        title: "TOO MANY REQUESTS",
+        message: "You've exceeded the maximum number of analysis requests allowed per minute.",
+      };
+    }
+    if (errorCode === "llm_rate_limit") {
+      return {
+        title: "LLM RATE LIMIT HIT",
+        message: "The Groq AI model has temporarily throttled your requests. Free-tier API keys have a limited number of tokens and requests per minute.",
+      };
+    }
+    return {
+      title: "RATE LIMIT REACHED",
+      message: "Too many requests in a short period. The service needs a moment to recover.",
+    };
+  }
+
+  // 404 — Ticker not found
+  if (status === 404) {
+    return {
+      title: "TICKER NOT FOUND",
+      message: "The ticker symbol you entered wasn't found on the National Stock Exchange (NSE). It may be delisted, misspelled, or not yet listed.",
+    };
+  }
+
+  // Everything else → internal server error
+  return {
+    title: "SOMETHING WENT WRONG",
+    message: serverMsg || "The analysis server encountered an unexpected error while processing your request. This is usually a temporary issue on our end.",
+  };
+}
+
+// ── Main analysis function ─────────────────────────────────────────────────────
+
+export async function analyseTicker({
+  ticker,
+  groqApiKey,
+  signal,
+}: {
+  ticker: string;
+  groqApiKey: string;
+  signal?: AbortSignal;
+}): Promise<AnalyseResponse> {
+  const cleanTicker = normalizeTicker(ticker);
   const url = `${API_BASE_URL}/analyze`;
 
   const headers: Record<string, string> = {
@@ -59,50 +151,58 @@ export async function analyseTicker(ticker: string, groqApiKey: string): Promise
     headers["Groq-API-Key"] = groqApiKey.trim();
   }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers,
-    body: JSON.stringify({ ticker: cleanTicker }),
-  });
-
-  if (!res.ok) {
-    const errorBody = await res.json().catch(() => ({}));
-    const message = errorBody?.detail?.message || `Request failed with status ${res.status}`;
-    throw new Error(message);
+  let res: Response;
+  try {
+    res = await fetch(url, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ ticker: cleanTicker }),
+      signal,
+    });
+  } catch (fetchErr) {
+    if (signal?.aborted) throw fetchErr;
+    throw new AnalysisError({
+      title: "CONNECTION FAILED",
+      message: "Unable to reach the analysis server. The backend may not be running, or your network connection may be interrupted.",
+    });
   }
 
-  const rawData = await res.json();
+  if (!res.ok) {
+    let detail: BackendErrorDetail = {};
+    try {
+      const errorBody = await res.json();
+      // Backend sends { detail: { error, message } }
+      detail = errorBody?.detail ?? errorBody ?? {};
+    } catch {
+      // JSON parse failed — use empty detail
+    }
+    throw new AnalysisError(buildErrorMessage(res.status, detail));
+  }
 
-  // Inject fallback dummy values if they are missing from the backend response
-  const data: AnalyseResponse = {
-    ticker: rawData.ticker ?? cleanTicker,
-    news_report: rawData.news_report || "No news report available.",
-    technical_report: rawData.technical_report || "No technical report available.",
-    fundamental_report: rawData.fundamental_report || "No fundamental report available.",
-    market_report: rawData.market_report || "No market report available.",
-    sector_report: rawData.sector_report || "No sector report available.",
-    investment_debate: rawData.investment_debate || DEFAULT_DEBATE,
-    research_verdict: rawData.research_verdict || DEFAULT_VERDICT,
-    status: rawData.status || "success",
-  };
-
+  const data: AnalyseResponse = await res.json();
   return data;
 }
 
-const KEY = (t: string) => `artha:research:${t.toUpperCase()}`;
+// ── Session cache ──────────────────────────────────────────────────────────────
+
+const KEY = (t: string) => `arbor:research:${t.toUpperCase()}`;
 
 export function cacheResponse(ticker: string, data: AnalyseResponse) {
   try {
-    let clean = ticker.trim().toUpperCase();
-    if (!clean.endsWith(".NS")) clean = `${clean}.NS`;
+    const clean = normalizeTicker(ticker);
     sessionStorage.setItem(KEY(clean), JSON.stringify(data));
+  } catch {}
+}
+
+export function clearCached(ticker: string) {
+  try {
+    sessionStorage.removeItem(KEY(normalizeTicker(ticker)));
   } catch {}
 }
 
 export function readCached(ticker: string): AnalyseResponse | null {
   try {
-    let clean = ticker.trim().toUpperCase();
-    if (!clean.endsWith(".NS")) clean = `${clean}.NS`;
+    const clean = normalizeTicker(ticker);
     const raw = sessionStorage.getItem(KEY(clean));
     return raw ? (JSON.parse(raw) as AnalyseResponse) : null;
   } catch {
