@@ -25,7 +25,7 @@ export function LoadingScreen({ ticker }: { ticker: string }) {
           <img 
             src="/landing_hero.png" 
             alt="Artha Analytics Logo" 
-            className="w-50 h-50 object-contain" 
+            className="w-52 h-52 object-contain" 
           />
         </div>
         <div className="mx-auto my-3 h-px w-full bg-[var(--border)]" />
