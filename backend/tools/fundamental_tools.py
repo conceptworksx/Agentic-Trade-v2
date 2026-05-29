@@ -194,7 +194,7 @@ def fetch_cash_flow(df: pd.DataFrame) -> dict[str, Any]:
 
         free_cash_flow = {
             date: (
-                round(ocf[date] + capex[date], 2)
+                round(ocf[date] - abs(capex[date]), 2)
                 if ocf.get(date) is not None and capex.get(date) is not None
                 else None
             )

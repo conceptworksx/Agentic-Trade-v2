@@ -32,7 +32,8 @@ def make_nodes(groq_api_key: str) -> dict:
     def run_data_prefetch(state: AgentState) -> dict:
         raw_bundle       = prefetch_ticker_bundle(state["ticker_of_company"])
         processed_bundle = process_prefetch_result(raw_bundle)
-        return {"data_bundle": processed_bundle}
+        charts_data      = processed_bundle.get("charts_data", {})
+        return {"data_bundle": processed_bundle, "charts_data": charts_data}
 
     @handle_node_errors("market_analyst")
     def run_market_analyst(state: AgentState) -> dict:
