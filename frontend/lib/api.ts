@@ -46,7 +46,7 @@ export interface AnalyseResponse {
   };
 }
 
-const API_BASE_URL = "http://localhost:8000";
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 
 export function normalizeTicker(ticker: string) {
   let cleanTicker = ticker.trim().toUpperCase();
@@ -82,7 +82,10 @@ export class AnalysisError extends Error {
  *   404 → { error: "ticker_not_found" }
  *   Everything else → 500 internal server error
  */
-function buildErrorMessage(status: number, detail: BackendErrorDetail): { title: string; message: string } {
+function buildErrorMessage(
+  status: number,
+  detail: BackendErrorDetail,
+): { title: string; message: string } {
   const errorCode = detail?.error ?? "";
   const serverMsg = detail?.message ?? "";
 
@@ -90,7 +93,8 @@ function buildErrorMessage(status: number, detail: BackendErrorDetail): { title:
   if (status === 401 || errorCode === "invalid_api_key") {
     return {
       title: "INVALID API KEY",
-      message: "We couldn't authenticate your request. The Groq API key provided appears to be invalid, expired, or improperly formatted.",
+      message:
+        "We couldn't authenticate your request. The Groq API key provided appears to be invalid, expired, or improperly formatted.",
     };
   }
 
@@ -99,18 +103,21 @@ function buildErrorMessage(status: number, detail: BackendErrorDetail): { title:
     if (errorCode === "app_rate_limit") {
       return {
         title: "TOO MANY REQUESTS",
-        message: "You've exceeded the maximum number of analysis requests allowed per minute.",
+        message:
+          "You've exceeded the maximum number of analysis requests allowed per minute.",
       };
     }
     if (errorCode === "llm_rate_limit") {
       return {
         title: "LLM RATE LIMIT HIT",
-        message: "The Groq AI model has temporarily throttled your requests. Free-tier API keys have a limited number of tokens and requests per minute.",
+        message:
+          "The Groq AI model has temporarily throttled your requests. Free-tier API keys have a limited number of tokens and requests per minute.",
       };
     }
     return {
       title: "RATE LIMIT REACHED",
-      message: "Too many requests in a short period. The service needs a moment to recover.",
+      message:
+        "Too many requests in a short period. The service needs a moment to recover.",
     };
   }
 
@@ -118,14 +125,17 @@ function buildErrorMessage(status: number, detail: BackendErrorDetail): { title:
   if (status === 404) {
     return {
       title: "TICKER NOT FOUND",
-      message: "The ticker symbol you entered wasn't found on the National Stock Exchange (NSE). It may be delisted, misspelled, or not yet listed.",
+      message:
+        "The ticker symbol you entered wasn't found on the National Stock Exchange (NSE). It may be delisted, misspelled, or not yet listed.",
     };
   }
 
   // Everything else → internal server error
   return {
     title: "SOMETHING WENT WRONG",
-    message: serverMsg || "The analysis server encountered an unexpected error while processing your request. This is usually a temporary issue on our end.",
+    message:
+      serverMsg ||
+      "The analysis server encountered an unexpected error while processing your request. This is usually a temporary issue on our end.",
   };
 }
 
@@ -163,7 +173,8 @@ export async function analyseTicker({
     if (signal?.aborted) throw fetchErr;
     throw new AnalysisError({
       title: "CONNECTION FAILED",
-      message: "Unable to reach the analysis server. The backend may not be running, or your network connection may be interrupted.",
+      message:
+        "Unable to reach the analysis server. The backend may not be running, or your network connection may be interrupted.",
     });
   }
 
