@@ -160,10 +160,10 @@ export default function ResearchDashboardClient({ ticker }: { ticker: string }) 
       {/* Navbar */}
       <header className="flex h-16 shrink-0 items-center justify-between border-b border-[var(--border)] bg-white px-5">
         <div className="flex items-center">
-          <img 
-            src="/navbar.png" 
-            alt="Artha Analytics" 
-            className="h-14 object-contain" 
+          <img
+            src="/navbar.png"
+            alt="Artha Analytics"
+            className="h-14 object-contain"
           />
         </div>
         <div className="font-mono text-[13px] text-[var(--muted-foreground)]">
